@@ -1,11 +1,11 @@
 import { MikroORM } from "@mikro-orm/core/MikroORM";
 import { __prod__ } from "./constants";
-import { Weight } from "./enitities/Weight";
 import mikroConfig from './mikro-orm.config';
+import 'reflect-metadata';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import { HelloResolver } from "./resolvers/hello";
+import { WeightResolver } from "./resolvers/WeightResolver";
 
 const main = async () => {
     const orm = await MikroORM.init(mikroConfig);
@@ -14,9 +14,10 @@ const main = async () => {
     const app = express();
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [HelloResolver],
+            resolvers: [WeightResolver],
             validate: false
-        })
+        }),
+        context: () => {{ em: orm.em  }}
     });
 
     apolloServer.applyMiddleware({ app })

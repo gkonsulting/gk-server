@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Weight = void 0;
 const core_1 = require("@mikro-orm/core");
+const type_graphql_1 = require("type-graphql");
 let Weight = class Weight {
     constructor() {
         this.createdAt = new Date();
@@ -18,22 +19,27 @@ let Weight = class Weight {
     }
 };
 __decorate([
+    type_graphql_1.Field(),
     core_1.PrimaryKey(),
     __metadata("design:type", Number)
 ], Weight.prototype, "id", void 0);
 __decorate([
+    type_graphql_1.Field(() => String),
     core_1.Property({ type: 'date' }),
     __metadata("design:type", Object)
 ], Weight.prototype, "createdAt", void 0);
 __decorate([
+    type_graphql_1.Field(() => String),
     core_1.Property({ type: 'date', onUpdate: () => new Date() }),
     __metadata("design:type", Object)
 ], Weight.prototype, "updatedAt", void 0);
 __decorate([
+    type_graphql_1.Field(),
     core_1.Property({ type: 'number' }),
     __metadata("design:type", Number)
 ], Weight.prototype, "weight", void 0);
 Weight = __decorate([
+    type_graphql_1.ObjectType(),
     core_1.Entity()
 ], Weight);
 exports.Weight = Weight;
