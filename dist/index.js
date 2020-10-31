@@ -19,13 +19,14 @@ const express_1 = __importDefault(require("express"));
 const apollo_server_express_1 = require("apollo-server-express");
 const type_graphql_1 = require("type-graphql");
 const WeightResolver_1 = require("./resolvers/WeightResolver");
+const UserResolver_1 = require("./resolvers/UserResolver");
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const orm = yield MikroORM_1.MikroORM.init(mikro_orm_config_1.default);
     yield orm.getMigrator().up();
     const app = express_1.default();
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({
-            resolvers: [WeightResolver_1.WeightResolver],
+            resolvers: [WeightResolver_1.WeightResolver, UserResolver_1.UserResolver],
             validate: false
         }),
         context: orm,
