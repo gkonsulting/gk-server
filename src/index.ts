@@ -10,6 +10,10 @@ import { WeightResolver } from "./resolvers/WeightResolver";
 const main = async () => {
     const orm = await MikroORM.init(mikroConfig);
     await orm.getMigrator().up();
+    //const weight = orm.em.create(Weight, {weight: 60});
+    //await orm.em.persistAndFlush(weight);
+    //const weights = await orm.em.find(Weight, {});
+    //console.log(weights);    
     
     const app = express();
     const apolloServer = new ApolloServer({
@@ -17,17 +21,14 @@ const main = async () => {
             resolvers: [WeightResolver],
             validate: false
         }),
-        context: () => {{ em: orm.em  }}
+        context: orm,
     });
 
     apolloServer.applyMiddleware({ app })
     
     app.listen(4000, ()=>{
-        console.log('Server starterd on localhost:4000')
+        console.log('Server starterd on port 4000')
     })
-
-    
-    
 }
 main().catch((err)=>{
     console.error(err);

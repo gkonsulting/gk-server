@@ -28,13 +28,11 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             resolvers: [WeightResolver_1.WeightResolver],
             validate: false
         }),
-        context: () => { {
-            em: orm.em;
-        } }
+        context: orm,
     });
     apolloServer.applyMiddleware({ app });
     app.listen(4000, () => {
-        console.log('Server starterd on localhost:4000');
+        console.log('Server starterd on port 4000');
     });
 });
 main().catch((err) => {
