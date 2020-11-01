@@ -28,32 +28,32 @@ let WeightResolver = class WeightResolver {
     getWeights(ctx) {
         return ctx.em.find(Weight_1.Weight, {});
     }
-    getOne(id, ctx) {
-        return ctx.em.findOne(Weight_1.Weight, { id });
+    getOne(id, { em }) {
+        return em.findOne(Weight_1.Weight, { id });
     }
-    createWeight(weight, ctx) {
+    createWeight(weight, { em }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const newWeight = ctx.em.create(Weight_1.Weight, { weight: weight });
-            yield ctx.em.persistAndFlush(newWeight);
+            const newWeight = em.create(Weight_1.Weight, { weight: weight });
+            yield em.persistAndFlush(newWeight);
             return newWeight;
         });
     }
-    updateWeight(id, newWeight, ctx) {
+    updateWeight(id, newWeight, { em }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const weight = yield ctx.em.findOne(Weight_1.Weight, { id });
+            const weight = yield em.findOne(Weight_1.Weight, { id });
             if (!weight)
                 return null;
             if (typeof weight !== 'undefined') {
                 weight.weight = newWeight;
-                yield ctx.em.persistAndFlush(weight);
+                yield em.persistAndFlush(weight);
             }
             return weight;
         });
     }
-    deleteWeight(id, ctx) {
+    deleteWeight(id, { em }) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield ctx.em.nativeDelete(Weight_1.Weight, { id });
+                yield em.nativeDelete(Weight_1.Weight, { id });
                 return true;
             }
             catch (_a) {

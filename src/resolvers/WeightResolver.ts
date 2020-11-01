@@ -11,32 +11,32 @@ export class WeightResolver {
     }
 
     @Query(()=>Weight)
-    getOne(@Arg('id') id: number, @Ctx() ctx: MyContext): Promise<Weight | null>{
-        return ctx.em.findOne(Weight, {id});
+    getOne(@Arg('id') id: number, @Ctx() {em}: MyContext): Promise<Weight | null>{
+        return em.findOne(Weight, {id});
     }
 
     @Mutation(()=>Weight)
-    async createWeight(@Arg('weight') weight: number, @Ctx() ctx: MyContext): Promise<Weight>{
-        const newWeight = ctx.em.create(Weight, {weight: weight});
-        await ctx.em.persistAndFlush(newWeight);
+    async createWeight(@Arg('weight') weight: number, @Ctx() {em}: MyContext): Promise<Weight>{
+        const newWeight = em.create(Weight, {weight: weight});
+        await em.persistAndFlush(newWeight);
         return newWeight;
     }
 
     @Mutation(()=>Weight, {nullable: true})
-    async updateWeight(@Arg('id') id: number, @Arg('weight') newWeight: number, @Ctx() ctx: MyContext): Promise<Weight | null>{
-        const weight = await ctx.em.findOne(Weight, {id})
+    async updateWeight(@Arg('id') id: number, @Arg('weight') newWeight: number, @Ctx() {em}: MyContext): Promise<Weight | null>{
+        const weight = await em.findOne(Weight, {id})
         if(!weight) return null;
         if(typeof weight !== 'undefined') {
             weight.weight = newWeight;
-            await ctx.em.persistAndFlush(weight);
+            await em.persistAndFlush(weight);
         }
         return weight
     }
 
     @Mutation(()=> Boolean)
-    async deleteWeight(@Arg('id') id: number, @Ctx() ctx: MyContext): Promise<boolean>{
+    async deleteWeight(@Arg('id') id: number, @Ctx() {em}: MyContext): Promise<boolean>{
         try{
-            await ctx.em.nativeDelete(Weight, {id})
+            await em.nativeDelete(Weight, {id})
             return true
         }
         catch{
