@@ -11,7 +11,6 @@ import {
 } from "type-graphql";
 import { MyContext } from "../types";
 import argon2 from "argon2";
-import { emit } from "process";
 
 @InputType()
 class UsernamePasswordInput {
@@ -41,8 +40,8 @@ class UserResponse {
 export class UserResolver {
     @Query(() => User, { nullable: true })
     async me(@Ctx() { em, req }: MyContext) {
-        if (!req.session.userId) return null;
-        const user = await em.findOne(User, { id: req.session.userId });
+        if (!req.session!.userId) return null;
+        const user = await em.findOne(User, { id: req.session!.userId });
         return user;
     }
 
@@ -123,7 +122,7 @@ export class UserResolver {
         // lagre userid session
         // setter cookie på brukeren
         // holder dem logget inn
-        req.session.userId = user.id; // ! kan være undefined
+        req.session!.userId = user.id; // ! kan være undefined
         return { user };
     }
 }
