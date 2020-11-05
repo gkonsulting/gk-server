@@ -11,7 +11,7 @@ import {
 } from "type-graphql";
 import { MyContext } from "../types";
 import argon2 from "argon2";
-
+import { EntityManager } from "@mikro-orm/postgresql";
 @InputType()
 class UsernamePasswordInput {
     @Field()
@@ -55,35 +55,42 @@ export class UserResolver {
                 errors: [
                     {
                         field: "username",
-                        message: "username must be at least three characters",
+                        message: "Username must be at least three characters",
                     },
                 ],
             };
         }
-        if (options.username.length < 3) {
+        if (options.password.length < 3) {
             return {
                 errors: [
                     {
-                        field: "username",
-                        message: "password must be at least 3 characters",
+                        field: "password",
+                        message: "Password must be at least three characters",
                     },
                 ],
             };
         }
         const hashedPassword = await argon2.hash(options.password);
-        const user = em.create(User, {
-            username: options.username,
-            password: hashedPassword,
-        });
+        let user;
         try {
-            await em.persistAndFlush(user);
+            const res = await (em as EntityManager)
+                .createQueryBuilder(User)
+                .getKnexQuery()
+                .insert({
+                    username: options.username,
+                    password: hashedPassword,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                })
+                .returning("*");
+            user = res[0];
         } catch (error) {
-            if (error.code === "23505") {
+            if (error.detail.includes("already exists")) {
                 return {
                     errors: [
                         {
                             field: "username",
-                            message: "username already exists",
+                            message: "Username already exists",
                         },
                     ],
                 };
