@@ -1,10 +1,10 @@
 import { Wrapper } from "../components/Wrapper";
-import { DarkModeSwitch } from "../components/DarkModeSwitch";
+import { Navbar } from "../components/Navbar";
 
 const Index = () => (
     <Wrapper>
+        <Navbar />
         <div>hello world</div>
-        <DarkModeSwitch />
     </Wrapper>
 );
 

@@ -110,7 +110,7 @@ export class UserResolver {
                 errors: [
                     {
                         field: "username",
-                        message: "that username does not exist.",
+                        message: "Wrong credentials.",
                     },
                 ],
             };
@@ -121,7 +121,7 @@ export class UserResolver {
                 errors: [
                     {
                         field: "password",
-                        message: "incorrect password",
+                        message: "Wrong credentials",
                     },
                 ],
             };
