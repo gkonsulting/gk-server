@@ -1,25 +1,21 @@
 import { MikroORM } from "@mikro-orm/core/MikroORM";
-import { __prod__ } from "./constants";
+import { COOKIE_NAME, __prod__ } from "./constants";
 import mikroConfig from "./mikro-orm.config";
 import "reflect-metadata";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import { WeightResolver } from "./resolvers/WeightResolver";
 import { UserResolver } from "./resolvers/UserResolver";
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import { MyContext } from "./types";
 import cors from "cors";
+import { MovieResolver } from "./resolvers/MovieResolver";
 
 const main = async () => {
     const orm = await MikroORM.init(mikroConfig);
     await orm.getMigrator().up();
-    //const weight = orm.em.create(Weight, {weight: 60});
-    //await orm.em.persistAndFlush(weight);
-    //const weights = await orm.em.find(Weight, {});
-    //console.log(weights);
 
     const app = express();
     const RedisStore = connectRedis(session);
@@ -30,9 +26,11 @@ const main = async () => {
             credentials: true,
         })
     );
+
+    // Session med express og redis, redis er in-memory datastruktur(dict/hashmap)
     app.use(
         session({
-            name: "qid",
+            name: COOKIE_NAME,
             store: new RedisStore({
                 client: redisClient,
                 disableTouch: true,
@@ -50,14 +48,16 @@ const main = async () => {
         })
     );
 
+    // Apolloserver setup, lager schema med resolvers
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [WeightResolver, UserResolver],
+            resolvers: [MovieResolver, UserResolver],
             validate: false,
         }),
         context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
     });
 
+    // Middleware
     apolloServer.applyMiddleware({
         app,
         cors: { origin: false },

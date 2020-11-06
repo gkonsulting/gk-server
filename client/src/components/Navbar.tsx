@@ -2,11 +2,12 @@ import React, { Fragment } from "react";
 import { Box, Heading, Flex, Text, Button, Link } from "@chakra-ui/core";
 import { DarkModeSwitch } from "./DarkModeSwitch";
 import NextLink from "next/link";
-import { useMeQuery } from "../generated/graphql";
+import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 
 interface NavbarProps {}
 
 export const Navbar: React.FC<NavbarProps> = (props) => {
+    const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
     const [{ data, fetching }] = useMeQuery();
     let body = null;
     if (fetching) {
@@ -46,13 +47,16 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
                     </NextLink>
                 </Box>
                 <Box mt={{ base: 4, md: 0 }} mr={5}>
-                    <NextLink href="/Login">
-                        <Link>
-                            <Button bg="transparent" border="1px">
-                                Logout
-                            </Button>
-                        </Link>
-                    </NextLink>
+                    <Button
+                        onClick={() => {
+                            logout();
+                        }}
+                        isLoading={logoutFetching}
+                        bg="transparent"
+                        border="1px"
+                    >
+                        Logout
+                    </Button>
                 </Box>
             </>
         );
@@ -70,7 +74,7 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
         >
             <Flex align="center" mr={5}>
                 <Heading as="h1" size="lg" letterSpacing={"-.1rem"}>
-                    App
+                    GK
                 </Heading>
             </Flex>
             <Flex justifyContent={"row-reverse"} alignItems={"center"}>

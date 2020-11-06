@@ -1,0 +1,8 @@
+query getMovies{
+    getMovies {
+        id
+        createdAt
+        updatedAt
+        title
+    }
+}

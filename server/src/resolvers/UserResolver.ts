@@ -12,6 +12,7 @@ import {
 import { MyContext } from "../types";
 import argon2 from "argon2";
 import { EntityManager } from "@mikro-orm/postgresql";
+import { COOKIE_NAME } from "../constants";
 @InputType()
 class UsernamePasswordInput {
     @Field()
@@ -36,6 +37,7 @@ class UserResponse {
     user?: User;
 }
 
+//Resolver for queries med graphql
 @Resolver()
 export class UserResolver {
     @Query(() => User, { nullable: true })
@@ -131,5 +133,21 @@ export class UserResolver {
         // holder dem logget inn
         req.session!.userId = user.id; // ! kan være undefined
         return { user };
+    }
+
+    // Fjerner session i redis, lager promise som venter på å fjerne session ved bruk av callback og fjerner cookie
+    @Mutation(() => Boolean)
+    logout(@Ctx() { req, res }: MyContext) {
+        return new Promise((resolve) =>
+            req.session?.destroy((err) => {
+                res.clearCookie(COOKIE_NAME);
+                if (err) {
+                    console.log(err);
+                    resolve(false);
+                    return;
+                }
+                resolve(true);
+            })
+        );
     }
 }
