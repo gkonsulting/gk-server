@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Formik } from "formik";
-import { Button } from "@chakra-ui/core";
+import { Button, Flex, Link } from "@chakra-ui/core";
 import { Wrapper } from "../components/Wrapper";
 import { InputField } from "../components/InputField";
 import { useLoginMutation } from "../generated/graphql";
@@ -9,9 +9,8 @@ import { useRouter } from "next/router";
 import { Navbar } from "../components/Navbar";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
-interface LoginProps {}
-
-const Login: React.FC<LoginProps> = ({}) => {
+import NextLink from "next/link";
+const Login: React.FC<{}> = ({}) => {
     const [, login] = useLoginMutation();
     const router = useRouter();
     return (
@@ -19,9 +18,9 @@ const Login: React.FC<LoginProps> = ({}) => {
             <Navbar />
             <Wrapper variant="small">
                 <Formik
-                    initialValues={{ username: "", password: "" }}
+                    initialValues={{ usernameOrEmail: "", password: "" }}
                     onSubmit={async (values, { setErrors }) => {
-                        const res = await login({ options: values });
+                        const res = await login(values);
                         if (res.data?.login.errors)
                             setErrors(toErrorMap(res.data.login.errors));
                         else if (res.data?.login.user) router.push("/");
@@ -30,9 +29,9 @@ const Login: React.FC<LoginProps> = ({}) => {
                     {({ isSubmitting }) => (
                         <Form>
                             <InputField
-                                name="username"
-                                placeholder="Username"
-                                label="Username"
+                                name="usernameOrEmail"
+                                placeholder="Username/Email"
+                                label="Username/Email"
                             />
                             <InputField
                                 name="password"
@@ -40,14 +39,18 @@ const Login: React.FC<LoginProps> = ({}) => {
                                 label="Password"
                                 type="password"
                             />
-                            <Button
-                                mt={4}
-                                isLoading={isSubmitting}
-                                type="submit"
-                                variantColor="teal"
-                            >
-                                Login
-                            </Button>
+                            <Flex mt={4}>
+                                <Button
+                                    isLoading={isSubmitting}
+                                    type="submit"
+                                    variantColor="teal"
+                                >
+                                    Login
+                                </Button>
+                                <NextLink href="/Forgot-password">
+                                    <Link ml="auto">Forgot password?</Link>
+                                </NextLink>
+                            </Flex>
                         </Form>
                     )}
                 </Formik>

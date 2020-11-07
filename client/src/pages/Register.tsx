@@ -19,9 +19,9 @@ const Register: React.FC<RegisterProps> = ({}) => {
             <Navbar />
             <Wrapper variant="small">
                 <Formik
-                    initialValues={{ username: "", password: "" }}
+                    initialValues={{ email: "", username: "", password: "" }}
                     onSubmit={async (values, { setErrors }) => {
-                        const res = await regiserUser(values);
+                        const res = await regiserUser({ options: values });
                         if (res.data?.registerUser.errors)
                             setErrors(toErrorMap(res.data.registerUser.errors));
                         else if (res.data?.registerUser.user) router.push("/");
@@ -29,6 +29,11 @@ const Register: React.FC<RegisterProps> = ({}) => {
                 >
                     {({ isSubmitting }) => (
                         <Form>
+                            <InputField
+                                name="email"
+                                placeholder="Email"
+                                label="Email"
+                            />
                             <InputField
                                 name="username"
                                 placeholder="Username"
