@@ -1,0 +1,13 @@
+mutation addMovie($input: MovieInput!) {
+    addMovie(input: $input) {
+        id
+        createdAt
+        updatedAt
+        title
+        description
+        reason
+        poster
+        score
+        creatorId
+    }
+}

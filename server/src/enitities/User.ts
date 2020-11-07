@@ -1,31 +1,42 @@
-import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, ObjectType } from "type-graphql";
- 
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from "typeorm";
+import { Movie } from "./Movie";
+
 //Lager entitet og objekttype
 @ObjectType()
 @Entity()
-export class User {
+export class User extends BaseEntity {
+    @Field()
+    @PrimaryGeneratedColumn()
+    id!: number;
 
-  @Field()
-  @PrimaryKey()
-  id!: number;
-  
-  @Field(()=>String)
-  @Property({type: 'date'})
-  createdAt = new Date();
-  
-  @Field(()=>String)
-  @Property({type: 'date', onUpdate: () => new Date() })
-  updatedAt = new Date();
-  
-  @Field()
-  @Property({type: 'text', unique: true})
-  username!: string;
-  
-  @Field()
-  @Property({type: 'text', unique: true})
-  email!: string;
-  
-  @Property({type: 'text'})
-  password!: string;
+    @Field(() => String)
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @Field(() => String)
+    @UpdateDateColumn()
+    updatedAt: Date;
+
+    @Field()
+    @Column({ unique: true })
+    username!: string;
+
+    @Field()
+    @Column({ unique: true })
+    email!: string;
+
+    @Column()
+    password!: string;
+
+    @OneToMany(() => Movie, (movie) => movie.creator)
+    movies: Movie[];
 }

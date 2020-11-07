@@ -39,6 +39,11 @@ export type Movie = {
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   title: Scalars['String'];
+  creatorId: Scalars['Float'];
+  description: Scalars['String'];
+  poster: Scalars['String'];
+  reason: Scalars['String'];
+  score: Scalars['Float'];
 };
 
 export type Mutation = {
@@ -48,7 +53,7 @@ export type Mutation = {
   registerUser: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
-  createMovie: Movie;
+  addMovie: Movie;
   updateMovie?: Maybe<Movie>;
   deleteMovie: Scalars['Boolean'];
 };
@@ -76,13 +81,13 @@ export type MutationLoginArgs = {
 };
 
 
-export type MutationCreateMovieArgs = {
-  title: Scalars['String'];
+export type MutationAddMovieArgs = {
+  input: MovieInput;
 };
 
 
 export type MutationUpdateMovieArgs = {
-  title: Scalars['String'];
+  title?: Maybe<Scalars['String']>;
   id: Scalars['Float'];
 };
 
@@ -107,6 +112,14 @@ export type UserCredentials = {
   email: Scalars['String'];
   username: Scalars['String'];
   password: Scalars['String'];
+};
+
+export type MovieInput = {
+  title: Scalars['String'];
+  description: Scalars['String'];
+  poster: Scalars['String'];
+  reason: Scalars['String'];
+  score: Scalars['Float'];
 };
 
 export type RegularErrorFragment = (
@@ -144,6 +157,16 @@ export type ChangePasswordMutation = (
   ) }
 );
 
+export type ResetPasswordMutationVariables = Exact<{
+  email: Scalars['String'];
+}>;
+
+
+export type ResetPasswordMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'resetPassword'>
+);
+
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -176,6 +199,19 @@ export type RegisterMutation = (
   & { registerUser: (
     { __typename?: 'UserResponse' }
     & RegularUserResponseFragment
+  ) }
+);
+
+export type AddMovieMutationVariables = Exact<{
+  input: MovieInput;
+}>;
+
+
+export type AddMovieMutation = (
+  { __typename?: 'Mutation' }
+  & { addMovie: (
+    { __typename?: 'Movie' }
+    & Pick<Movie, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'description' | 'reason' | 'poster' | 'score' | 'creatorId'>
   ) }
 );
 
@@ -235,6 +271,15 @@ export const ChangePasswordDocument = gql`
 export function useChangePasswordMutation() {
   return Urql.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument);
 };
+export const ResetPasswordDocument = gql`
+    mutation resetPassword($email: String!) {
+  resetPassword(email: $email)
+}
+    `;
+
+export function useResetPasswordMutation() {
+  return Urql.useMutation<ResetPasswordMutation, ResetPasswordMutationVariables>(ResetPasswordDocument);
+};
 export const LoginDocument = gql`
     mutation Login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {
@@ -265,6 +310,25 @@ export const RegisterDocument = gql`
 
 export function useRegisterMutation() {
   return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
+};
+export const AddMovieDocument = gql`
+    mutation addMovie($input: MovieInput!) {
+  addMovie(input: $input) {
+    id
+    createdAt
+    updatedAt
+    title
+    description
+    reason
+    poster
+    score
+    creatorId
+  }
+}
+    `;
+
+export function useAddMovieMutation() {
+  return Urql.useMutation<AddMovieMutation, AddMovieMutationVariables>(AddMovieDocument);
 };
 export const MeDocument = gql`
     query Me {

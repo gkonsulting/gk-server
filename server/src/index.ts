@@ -1,6 +1,4 @@
-import { MikroORM } from "@mikro-orm/core/MikroORM";
 import { COOKIE_NAME, __prod__ } from "./constants";
-import mikroConfig from "./mikro-orm.config";
 import "reflect-metadata";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
@@ -12,10 +10,19 @@ import connectRedis from "connect-redis";
 import { MyContext } from "./types";
 import cors from "cors";
 import { MovieResolver } from "./resolvers/MovieResolver";
+import { createConnection } from "typeorm";
+import { Movie } from "./enitities/Movie";
+import { User } from "./enitities/User";
 
 const main = async () => {
-    const orm = await MikroORM.init(mikroConfig);
-    await orm.getMigrator().up();
+    await createConnection({
+        type: "postgres",
+        database: "gk",
+        username: "ianevangelista",
+        logging: true,
+        synchronize: true,
+        entities: [Movie, User],
+    });
 
     const app = express();
     const RedisStore = connectRedis(session);
@@ -54,7 +61,7 @@ const main = async () => {
             resolvers: [MovieResolver, UserResolver],
             validate: false,
         }),
-        context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
+        context: ({ req, res }): MyContext => ({ req, res, redis }),
     });
 
     // Middleware

@@ -33,7 +33,7 @@ export const ResetPassword: NextPage<{ token: string }> = ({ token }) => {
                             );
                             if ("token" in errorMap)
                                 setTokenError(errorMap.token);
-                            setErrors(errorMap);
+                            setErrors(errorMap)
                         } else if (res.data?.changePassword.user)
                             router.push("/");
                     }}
