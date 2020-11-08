@@ -7,7 +7,7 @@ mutation addMovie($input: MovieInput!) {
         description
         reason
         poster
-        score
+        rating
         creatorId
     }
 }

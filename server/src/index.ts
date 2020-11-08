@@ -13,17 +13,18 @@ import { MovieResolver } from "./resolvers/MovieResolver";
 import { createConnection } from "typeorm";
 import { Movie } from "./enitities/Movie";
 import { User } from "./enitities/User";
-
+import path from "path";
 const main = async () => {
-    await createConnection({
+    const conn = await createConnection({
         type: "postgres",
         database: "gk",
         username: "ianevangelista",
         logging: true,
         synchronize: true,
         entities: [Movie, User],
+        migrations: [path.join(__dirname, "./migrations/*")],
     });
-
+    await conn.runMigrations();
     const app = express();
     const RedisStore = connectRedis(session);
     const redis = new Redis();

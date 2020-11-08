@@ -1,8 +1,15 @@
-query getMovies{
-    getMovies {
-        id
-        createdAt
-        updatedAt
-        title
+query getMovies($limit: Int!, $cursor: String) {
+    getMovies(cursor: $cursor, limit: $limit) {
+        hasMore
+        movies {
+            id
+            createdAt
+            updatedAt
+            title
+            rating
+            description
+            reason
+            poster
+        }
     }
 }

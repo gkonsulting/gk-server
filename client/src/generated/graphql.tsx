@@ -15,8 +15,14 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
-  getMovies: Array<Movie>;
+  getMovies: PaginatedMovies;
   getOne: Movie;
+};
+
+
+export type QueryGetMoviesArgs = {
+  cursor?: Maybe<Scalars['String']>;
+  limit: Scalars['Int'];
 };
 
 
@@ -33,6 +39,12 @@ export type User = {
   email: Scalars['String'];
 };
 
+export type PaginatedMovies = {
+  __typename?: 'PaginatedMovies';
+  movies: Array<Movie>;
+  hasMore: Scalars['Boolean'];
+};
+
 export type Movie = {
   __typename?: 'Movie';
   id: Scalars['Float'];
@@ -43,7 +55,7 @@ export type Movie = {
   description: Scalars['String'];
   poster: Scalars['String'];
   reason: Scalars['String'];
-  score: Scalars['Float'];
+  rating: Scalars['String'];
 };
 
 export type Mutation = {
@@ -119,7 +131,7 @@ export type MovieInput = {
   description: Scalars['String'];
   poster: Scalars['String'];
   reason: Scalars['String'];
-  score: Scalars['Float'];
+  rating: Scalars['String'];
 };
 
 export type RegularErrorFragment = (
@@ -211,7 +223,7 @@ export type AddMovieMutation = (
   { __typename?: 'Mutation' }
   & { addMovie: (
     { __typename?: 'Movie' }
-    & Pick<Movie, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'description' | 'reason' | 'poster' | 'score' | 'creatorId'>
+    & Pick<Movie, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'description' | 'reason' | 'poster' | 'rating' | 'creatorId'>
   ) }
 );
 
@@ -226,15 +238,22 @@ export type MeQuery = (
   )> }
 );
 
-export type GetMoviesQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetMoviesQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  cursor?: Maybe<Scalars['String']>;
+}>;
 
 
 export type GetMoviesQuery = (
   { __typename?: 'Query' }
-  & { getMovies: Array<(
-    { __typename?: 'Movie' }
-    & Pick<Movie, 'id' | 'createdAt' | 'updatedAt' | 'title'>
-  )> }
+  & { getMovies: (
+    { __typename?: 'PaginatedMovies' }
+    & Pick<PaginatedMovies, 'hasMore'>
+    & { movies: Array<(
+      { __typename?: 'Movie' }
+      & Pick<Movie, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'rating' | 'description' | 'reason' | 'poster'>
+    )> }
+  ) }
 );
 
 export const RegularErrorFragmentDoc = gql`
@@ -321,7 +340,7 @@ export const AddMovieDocument = gql`
     description
     reason
     poster
-    score
+    rating
     creatorId
   }
 }
@@ -342,12 +361,19 @@ export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'q
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
 };
 export const GetMoviesDocument = gql`
-    query getMovies {
-  getMovies {
-    id
-    createdAt
-    updatedAt
-    title
+    query getMovies($limit: Int!, $cursor: String) {
+  getMovies(cursor: $cursor, limit: $limit) {
+    hasMore
+    movies {
+      id
+      createdAt
+      updatedAt
+      title
+      rating
+      description
+      reason
+      poster
+    }
   }
 }
     `;

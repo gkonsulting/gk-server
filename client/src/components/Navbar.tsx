@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { Box, Heading, Flex, Text, Button, Link } from "@chakra-ui/core";
 import { DarkModeSwitch } from "./DarkModeSwitch";
 import NextLink from "next/link";
@@ -41,6 +41,24 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
         body = (
             <>
                 <Box mt={{ base: 4, md: 0 }} mr={5}>
+                    <NextLink href="/Movies">
+                        <Link>
+                            <Button bg="transparent" border="1px">
+                                Movies
+                            </Button>
+                        </Link>
+                    </NextLink>
+                </Box>
+                <Box mt={{ base: 4, md: 0 }} mr={5}>
+                    <NextLink href="/Add-movie">
+                        <Link>
+                            <Button bg="transparent" border="1px">
+                                Add movie
+                            </Button>
+                        </Link>
+                    </NextLink>
+                </Box>
+                <Box mt={{ base: 4, md: 0 }} mr={5}>
                     <NextLink href="/Login">
                         <Link>
                             <Button bg="transparent" border="1px">
@@ -71,13 +89,16 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
             justify="space-between"
             wrap="wrap"
             padding="1.5rem"
-            bg="teal.500"
+            bg="black"
             color="white"
+            position="fixed"
+            w="100%"
+            zIndex={1}
             {...props}
         >
             <Flex align="center" mr={5}>
                 <Heading as="h1" size="lg" letterSpacing={"-.1rem"}>
-                    GK
+                    <NextLink href="/">GK</NextLink>
                 </Heading>
             </Flex>
             <Flex justifyContent={"row-reverse"} alignItems={"center"}>

@@ -4,13 +4,16 @@ import {
     Ctx,
     Field,
     InputType,
+    Int,
     Mutation,
+    ObjectType,
     Query,
     Resolver,
     UseMiddleware,
 } from "type-graphql";
 import { MyContext } from "src/types";
 import { isAuth } from "../enitities/middleware/isAUth";
+import { getConnection } from "typeorm";
 
 //Resolver for queries med graphql
 @InputType()
@@ -24,18 +27,46 @@ class MovieInput {
     @Field()
     reason: string;
     @Field()
-    score: number;
+    rating: string;
+}
+
+@ObjectType()
+class PaginatedMovies {
+    @Field(() => [Movie])
+    movies: Movie[];
+    @Field()
+    hasMore: boolean;
 }
 
 @Resolver()
 export class MovieResolver {
-    @Query(() => [Movie])
-    getMovies(): Promise<Movie[]> {
-        return Movie.find();
+    @Query(() => PaginatedMovies)
+    async getMovies(
+        @Arg("limit", () => Int) limit: number,
+        @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+    ): Promise<PaginatedMovies> {
+        const realLimit = Math.min(10, limit);
+        const realLimitPlusOne = Math.min(10, limit) + 1;
+        const qb = getConnection()
+            .getRepository(Movie)
+            .createQueryBuilder("user")
+            .orderBy('"createdAt"', "DESC") // holde A uppercase, sorterer etter nyeste
+            .take(realLimitPlusOne);
+
+        if (cursor) {
+            qb.where('"createdAt" < :cursor', {
+                cursor: new Date(parseInt(cursor)),
+            });
+        }
+        const movies = await qb.getMany();
+        return {
+            movies: movies.slice(0, realLimit),
+            hasMore: movies.length === realLimitPlusOne,
+        };
     }
 
     @Query(() => Movie)
-    getOne(@Arg("id") id: number): Promise<Movie | undefined> {
+    async getOne(@Arg("id") id: number): Promise<Movie | undefined> {
         return Movie.findOne(id);
     }
 

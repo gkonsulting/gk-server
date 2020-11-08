@@ -12,7 +12,7 @@ import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 import NextLink from "next/link";
 
-export const ResetPassword: NextPage<{ token: string }> = ({ token }) => {
+export const ResetPassword: NextPage = () => {
     const router = useRouter();
     const [, changePassword] = useChangePasswordMutation();
     const [tokenError, setTokenError] = useState("");
@@ -25,7 +25,10 @@ export const ResetPassword: NextPage<{ token: string }> = ({ token }) => {
                     onSubmit={async (values, { setErrors }) => {
                         const res = await changePassword({
                             newPassword: values.newPassword,
-                            token,
+                            token:
+                                typeof router.query.token === "string"
+                                    ? router.query.token
+                                    : "",
                         });
                         if (res.data?.changePassword.errors) {
                             const errorMap = toErrorMap(
@@ -33,7 +36,7 @@ export const ResetPassword: NextPage<{ token: string }> = ({ token }) => {
                             );
                             if ("token" in errorMap)
                                 setTokenError(errorMap.token);
-                            setErrors(errorMap)
+                            setErrors(errorMap);
                         } else if (res.data?.changePassword.user)
                             router.push("/");
                     }}
@@ -70,12 +73,6 @@ export const ResetPassword: NextPage<{ token: string }> = ({ token }) => {
             </Wrapper>
         </>
     );
-};
-
-ResetPassword.getInitialProps = ({ query }) => {
-    return {
-        token: query.token as string,
-    };
 };
 
 export default withUrqlClient(createUrqlClient)(ResetPassword);

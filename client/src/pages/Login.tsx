@@ -23,7 +23,12 @@ const Login: React.FC<{}> = ({}) => {
                         const res = await login(values);
                         if (res.data?.login.errors)
                             setErrors(toErrorMap(res.data.login.errors));
-                        else if (res.data?.login.user) router.push("/");
+                        else if (res.data?.login.user) {
+                            if (typeof router.query.next === "string")
+                                // sjekker om man har prøvd å gjøre noe når man ikke er logget inn, blir sendt tilbake
+                                router.push(router.query.next);
+                            else router.push("/");
+                        }
                     }}
                 >
                     {({ isSubmitting }) => (

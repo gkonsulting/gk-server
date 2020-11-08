@@ -1,14 +1,16 @@
 import { Flex, Button } from "@chakra-ui/core";
 import { Formik, Form } from "formik";
-import React from "react";
+import React, { useEffect } from "react";
 import { InputField } from "../components/InputField";
 import { Navbar } from "../components/Navbar";
 import { Wrapper } from "../components/Wrapper";
-import { useAddMovieMutation } from "../generated/graphql";
+import { useAddMovieMutation, useMeQuery } from "../generated/graphql";
 import { useRouter } from "next/router";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../utils/createUrqlClient";
+import { userAuth } from "../utils/userAuth";
 const AddMovie: React.FC<{}> = ({}) => {
+    userAuth(); // Sjekker om bruker er logget inn, hvis ikke navigeres brukeren til login
     const [, addMovie] = useAddMovieMutation();
     const router = useRouter();
     return (
@@ -21,13 +23,13 @@ const AddMovie: React.FC<{}> = ({}) => {
                         description: "",
                         poster: "",
                         reason: "",
-                        score: 0,
+                        rating: "",
                     }}
                     onSubmit={async (values) => {
-                        console.log(typeof values.score);
-                        
-                        await addMovie({ input: values });
-                        router.push("/");
+                        const { error } = await addMovie({ input: values });
+                        if (!error) {
+                            router.push("/Movies");
+                        }
                     }}
                 >
                     {({ isSubmitting }) => (
@@ -43,10 +45,9 @@ const AddMovie: React.FC<{}> = ({}) => {
                                 label="Description"
                             />
                             <InputField
-                                name="score"
-                                placeholder="IMDB-Score"
-                                label="Score"
-                                type="decimal"
+                                name="rating"
+                                placeholder="IMDB-rating"
+                                label="Rating"
                             />
                             <InputField
                                 name="poster"
