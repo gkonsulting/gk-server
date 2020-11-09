@@ -1,4 +1,4 @@
-import { cacheExchange, Resolver } from "@urql/exchange-graphcache";
+import { cacheExchange, Resolver, Cache } from "@urql/exchange-graphcache";
 import {
     dedupExchange,
     Exchange,
@@ -125,6 +125,14 @@ export const cursorPagination = (): Resolver => {
     };
 };
 
+function invalidateAllMovies(cache: Cache) {
+    const allFields = cache.inspectFields("Query");
+    const fieldInfos = allFields.filter((info) => info.fieldName === "getMovies");
+    fieldInfos.forEach((movie) => {
+        cache.invalidate("Query", "getMovies", movie.arguments || {});
+    });
+}
+
 export const createUrqlClient = (ssrExchange: any) => ({
     url: "http://localhost:4000/graphql",
     fetchOptions: {
@@ -178,6 +186,9 @@ export const createUrqlClient = (ssrExchange: any) => ({
                                     };
                             }
                         );
+                    },
+                    addMovie: (_result, args, cache, info) => {
+                        invalidateAllMovies(cache);
                     },
                 },
             },

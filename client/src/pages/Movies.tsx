@@ -45,6 +45,7 @@ const Movies = () => {
                                               description={movie.description}
                                               rating={movie.rating}
                                               reason={movie.reason}
+                                              creator={movie.creator}
                                           />
                                       </Flex>
                                   ))}
@@ -52,7 +53,7 @@ const Movies = () => {
                         {data && data.getMovies.hasMore ? (
                             <Flex justifyContent="center">
                                 <Button
-                                    color="black"
+                                    variantColor="teal"
                                     isLoading={fetching}
                                     onClick={() => {
                                         setVariables({

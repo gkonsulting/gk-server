@@ -1,0 +1,15 @@
+fragment MovieInfo on Movie {
+    id
+    createdAt
+    updatedAt
+    title
+    rating
+    description
+    reason
+    poster
+    creator {
+        id
+        username
+        email
+    }
+}

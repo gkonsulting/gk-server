@@ -47,18 +47,33 @@ export class MovieResolver {
     ): Promise<PaginatedMovies> {
         const realLimit = Math.min(10, limit);
         const realLimitPlusOne = Math.min(10, limit) + 1;
-        const qb = getConnection()
-            .getRepository(Movie)
-            .createQueryBuilder("user")
-            .orderBy('"createdAt"', "DESC") // holde A uppercase, sorterer etter nyeste
-            .take(realLimitPlusOne);
-
+        // const qb = getConnection()
+        //     .getRepository(Movie)
+        //     .createQueryBuilder("movie")
+        //     .innerJoinAndSelect("movie.creator", "u", 'u.id = p."creatorid"')
+        //     .orderBy('movie."createdAt"', "DESC") // holde A uppercase, sorterer etter nyeste
+        //     .take(realLimitPlusOne);
+        // if (cursor) {
+        //     qb.where('movie."createdAt" < :cursor', {
+        //         cursor: new Date(parseInt(cursor)),
+        //     });
+        // }
+        const replacements: any[] = [realLimitPlusOne];
         if (cursor) {
-            qb.where('"createdAt" < :cursor', {
-                cursor: new Date(parseInt(cursor)),
-            });
+            replacements.push(new Date(parseInt(cursor)));
         }
-        const movies = await qb.getMany();
+        const movies = await getConnection().query(
+            `
+          select m.*,
+          json_build_object('id', u.id, 'username', u.username, 'email', u.email) creator
+          from movie m
+          inner join public.user u on u.id = m."creatorId"
+          ${cursor ? `where m."createdAt" < $2` : ""}
+          order by m."createdAt" DESC
+          limit $1
+          `,
+            replacements
+        );
         return {
             movies: movies.slice(0, realLimit),
             hasMore: movies.length === realLimitPlusOne,

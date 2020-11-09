@@ -52,6 +52,7 @@ export type Movie = {
   updatedAt: Scalars['String'];
   title: Scalars['String'];
   creatorId: Scalars['Float'];
+  creator: User;
   description: Scalars['String'];
   poster: Scalars['String'];
   reason: Scalars['String'];
@@ -133,6 +134,15 @@ export type MovieInput = {
   reason: Scalars['String'];
   rating: Scalars['String'];
 };
+
+export type MovieInfoFragment = (
+  { __typename?: 'Movie' }
+  & Pick<Movie, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'rating' | 'description' | 'reason' | 'poster'>
+  & { creator: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'email'>
+  ) }
+);
 
 export type RegularErrorFragment = (
   { __typename?: 'FieldError' }
@@ -251,11 +261,28 @@ export type GetMoviesQuery = (
     & Pick<PaginatedMovies, 'hasMore'>
     & { movies: Array<(
       { __typename?: 'Movie' }
-      & Pick<Movie, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'rating' | 'description' | 'reason' | 'poster'>
+      & MovieInfoFragment
     )> }
   ) }
 );
 
+export const MovieInfoFragmentDoc = gql`
+    fragment MovieInfo on Movie {
+  id
+  createdAt
+  updatedAt
+  title
+  rating
+  description
+  reason
+  poster
+  creator {
+    id
+    username
+    email
+  }
+}
+    `;
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
   field
@@ -365,18 +392,11 @@ export const GetMoviesDocument = gql`
   getMovies(cursor: $cursor, limit: $limit) {
     hasMore
     movies {
-      id
-      createdAt
-      updatedAt
-      title
-      rating
-      description
-      reason
-      poster
+      ...MovieInfo
     }
   }
 }
-    `;
+    ${MovieInfoFragmentDoc}`;
 
 export function useGetMoviesQuery(options: Omit<Urql.UseQueryArgs<GetMoviesQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<GetMoviesQuery>({ query: GetMoviesDocument, ...options });

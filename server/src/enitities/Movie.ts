@@ -34,6 +34,10 @@ export class Movie extends BaseEntity {
     @Column()
     creatorId: number;
 
+    @Field(() => User)
+    @ManyToOne(() => User, (user) => user.movies)
+    creator: User;
+
     @Field()
     @Column()
     description!: string;
@@ -49,7 +53,4 @@ export class Movie extends BaseEntity {
     @Field()
     @Column()
     rating!: string;
-
-    @ManyToOne(() => User, (user) => user.movies)
-    creator: User;
 }
