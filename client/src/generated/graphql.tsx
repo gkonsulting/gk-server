@@ -16,7 +16,7 @@ export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
   getMovies: PaginatedMovies;
-  getOne: Movie;
+  getMovie: Movie;
 };
 
 
@@ -26,8 +26,8 @@ export type QueryGetMoviesArgs = {
 };
 
 
-export type QueryGetOneArgs = {
-  id: Scalars['Float'];
+export type QueryGetMovieArgs = {
+  id: Scalars['Int'];
 };
 
 export type User = {
@@ -100,13 +100,13 @@ export type MutationAddMovieArgs = {
 
 
 export type MutationUpdateMovieArgs = {
-  title?: Maybe<Scalars['String']>;
-  id: Scalars['Float'];
+  input: MovieInput;
+  id: Scalars['Int'];
 };
 
 
 export type MutationDeleteMovieArgs = {
-  id: Scalars['Float'];
+  id: Scalars['Int'];
 };
 
 export type UserResponse = {
@@ -142,6 +142,11 @@ export type MovieInfoFragment = (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username' | 'email'>
   ) }
+);
+
+export type MovieUpdateFragment = (
+  { __typename?: 'Movie' }
+  & Pick<Movie, 'id' | 'title' | 'rating' | 'description' | 'reason' | 'poster'>
 );
 
 export type RegularErrorFragment = (
@@ -237,6 +242,31 @@ export type AddMovieMutation = (
   ) }
 );
 
+export type DeleteMovieMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteMovieMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteMovie'>
+);
+
+export type UpdateMovieMutationVariables = Exact<{
+  id: Scalars['Int'];
+  input: MovieInput;
+}>;
+
+
+export type UpdateMovieMutation = (
+  { __typename?: 'Mutation' }
+  & { updateMovie?: Maybe<(
+    { __typename?: 'Movie' }
+    & Pick<Movie, 'id'>
+    & MovieUpdateFragment
+  )> }
+);
+
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -246,6 +276,19 @@ export type MeQuery = (
     { __typename?: 'User' }
     & UserInfoFragment
   )> }
+);
+
+export type GetMovieQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type GetMovieQuery = (
+  { __typename?: 'Query' }
+  & { getMovie: (
+    { __typename?: 'Movie' }
+    & MovieInfoFragment
+  ) }
 );
 
 export type GetMoviesQueryVariables = Exact<{
@@ -281,6 +324,16 @@ export const MovieInfoFragmentDoc = gql`
     username
     email
   }
+}
+    `;
+export const MovieUpdateFragmentDoc = gql`
+    fragment MovieUpdate on Movie {
+  id
+  title
+  rating
+  description
+  reason
+  poster
 }
     `;
 export const RegularErrorFragmentDoc = gql`
@@ -376,6 +429,27 @@ export const AddMovieDocument = gql`
 export function useAddMovieMutation() {
   return Urql.useMutation<AddMovieMutation, AddMovieMutationVariables>(AddMovieDocument);
 };
+export const DeleteMovieDocument = gql`
+    mutation deleteMovie($id: Int!) {
+  deleteMovie(id: $id)
+}
+    `;
+
+export function useDeleteMovieMutation() {
+  return Urql.useMutation<DeleteMovieMutation, DeleteMovieMutationVariables>(DeleteMovieDocument);
+};
+export const UpdateMovieDocument = gql`
+    mutation updateMovie($id: Int!, $input: MovieInput!) {
+  updateMovie(id: $id, input: $input) {
+    id
+    ...MovieUpdate
+  }
+}
+    ${MovieUpdateFragmentDoc}`;
+
+export function useUpdateMovieMutation() {
+  return Urql.useMutation<UpdateMovieMutation, UpdateMovieMutationVariables>(UpdateMovieDocument);
+};
 export const MeDocument = gql`
     query Me {
   me {
@@ -386,6 +460,17 @@ export const MeDocument = gql`
 
 export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
+};
+export const GetMovieDocument = gql`
+    query getMovie($id: Int!) {
+  getMovie(id: $id) {
+    ...MovieInfo
+  }
+}
+    ${MovieInfoFragmentDoc}`;
+
+export function useGetMovieQuery(options: Omit<Urql.UseQueryArgs<GetMovieQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetMovieQuery>({ query: GetMovieDocument, ...options });
 };
 export const GetMoviesDocument = gql`
     query getMovies($limit: Int!, $cursor: String) {

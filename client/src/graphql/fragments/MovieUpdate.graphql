@@ -1,0 +1,8 @@
+fragment MovieUpdate on Movie {
+    id
+    title
+    rating
+    description
+    reason
+    poster
+}

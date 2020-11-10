@@ -19,7 +19,7 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
             <>
                 <Box mt={{ base: 4, md: 0 }} mr={5}>
                     <NextLink href="/Login">
-                        <Link>
+                        <Link _hover={{ textDecoration: "none" }}>
                             <Button bg="transparent" border="1px">
                                 Login
                             </Button>
@@ -28,7 +28,7 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
                 </Box>
                 <Box mt={{ base: 4, md: 0 }} mr={5}>
                     <NextLink href="/Register">
-                        <Link>
+                        <Link _hover={{ textDecoration: "none" }}>
                             <Button bg="transparent" border="1px">
                                 Register
                             </Button>
@@ -42,8 +42,8 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
             <>
                 <Box mt={{ base: 4, md: 0 }} mr={5}>
                     <NextLink href="/Movies">
-                        <Link>
-                            <Button bg="transparent" border="1px">
+                        <Link _hover={{ textDecoration: "none" }}>
+                            <Button variantColor="teal" border="1px">
                                 Movies
                             </Button>
                         </Link>
@@ -51,17 +51,17 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
                 </Box>
                 <Box mt={{ base: 4, md: 0 }} mr={5}>
                     <NextLink href="/Add-movie">
-                        <Link>
-                            <Button bg="transparent" border="1px">
+                        <Link _hover={{ textDecoration: "none" }}>
+                            <Button variantColor="teal" border="1px">
                                 Add movie
                             </Button>
                         </Link>
                     </NextLink>
                 </Box>
                 <Box mt={{ base: 4, md: 0 }} mr={5}>
-                    <NextLink href="/Login">
-                        <Link>
-                            <Button bg="transparent" border="1px">
+                    <NextLink href="/Profile">
+                        <Link _hover={{ textDecoration: "none" }}>
+                            <Button variantColor="teal" border="1px">
                                 User: {data.me.username}
                             </Button>
                         </Link>
@@ -73,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
                             logout();
                         }}
                         isLoading={logoutFetching}
-                        bg="transparent"
+                        variantColor="teal"
                         border="1px"
                     >
                         Logout
@@ -90,15 +90,22 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
             wrap="wrap"
             padding="1.5rem"
             bg="black"
-            color="white"
-            position="fixed"
-            w="100%"
+            position="sticky"
+            top={0}
             zIndex={1}
             {...props}
         >
             <Flex align="center" mr={5}>
                 <Heading as="h1" size="lg" letterSpacing={"-.1rem"}>
-                    <NextLink href="/">GK</NextLink>
+                    <NextLink href="/">
+                        <NextLink href="/">
+                            <Link _hover={{ textDecoration: "none" }}>
+                                <Text fontSize={36} color="teal.500">
+                                    GK
+                                </Text>
+                            </Link>
+                        </NextLink>
+                    </NextLink>
                 </Heading>
             </Flex>
             <Flex justifyContent={"row-reverse"} alignItems={"center"}>

@@ -1,35 +1,39 @@
-import { Flex, Button } from "@chakra-ui/core";
+import { Button, Flex } from "@chakra-ui/core";
 import { Formik, Form } from "formik";
-import React from "react";
-import { InputField } from "../components/InputField";
-import { Navbar } from "../components/Navbar";
-import { Wrapper } from "../components/Wrapper";
-import { useAddMovieMutation } from "../generated/graphql";
-import { useRouter } from "next/router";
 import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../utils/createUrqlClient";
-import { userAuth } from "../utils/userAuth";
-const AddMovie: React.FC<{}> = ({}) => {
-    userAuth(); // Sjekker om bruker er logget inn, hvis ikke navigeres brukeren til login
-    const [, addMovie] = useAddMovieMutation();
+import { useRouter } from "next/router";
+import React from "react";
+import { InputField } from "../../../components/InputField";
+import { Navbar } from "../../../components/Navbar";
+import { Wrapper } from "../../../components/Wrapper";
+import { useUpdateMovieMutation } from "../../../generated/graphql";
+import { createUrqlClient } from "../../../utils/createUrqlClient";
+import { useGetMovieFromUrl } from "../../../utils/useGetMovieFromUrl";
+
+export const updateMovie: React.FC<{}> = ({}) => {
+    const [{ data, error, fetching }] = useGetMovieFromUrl();
+    const movie = data?.getMovie;
+    const [, updateMovie] = useUpdateMovieMutation();
     const router = useRouter();
+
     return (
         <>
             <Navbar />
             <Wrapper variant="small">
                 <Formik
                     initialValues={{
-                        title: "",
-                        description: "",
-                        poster: "",
-                        reason: "",
-                        rating: "",
+                        title: movie?.title,
+                        description: movie?.description,
+                        poster: movie?.poster,
+                        reason: movie?.reason,
+                        rating: movie?.rating,
                     }}
                     onSubmit={async (values) => {
-                        const { error } = await addMovie({ input: values });
-                        if (!error) {
-                            router.push("/Movies");
-                        }
+                        await updateMovie({
+                            id: movie?.id,
+                            input: values,
+                        });
+                        router.back();
                     }}
                 >
                     {({ isSubmitting }) => (
@@ -65,7 +69,7 @@ const AddMovie: React.FC<{}> = ({}) => {
                                     type="submit"
                                     variantColor="teal"
                                 >
-                                    Add movie
+                                    Update movie
                                 </Button>
                             </Flex>
                         </Form>
@@ -75,4 +79,5 @@ const AddMovie: React.FC<{}> = ({}) => {
         </>
     );
 };
-export default withUrqlClient(createUrqlClient)(AddMovie);
+
+export default withUrqlClient(createUrqlClient)(updateMovie);

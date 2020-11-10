@@ -9,5 +9,7 @@ export const userAuth = () => {
     useEffect(() => {
         if (!fetching && !data?.me)
             router.replace("/Login?next=" + router.pathname);
+            console.log(router.pathname);
+            
     }, [fetching, data, router]);
 };

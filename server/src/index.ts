@@ -14,11 +14,23 @@ import { createConnection } from "typeorm";
 import { Movie } from "./enitities/Movie";
 import { User } from "./enitities/User";
 import path from "path";
+require("dotenv").config();
+
 const main = async () => {
     const conn = await createConnection({
         type: "postgres",
-        database: "gk",
-        username: "ianevangelista",
+        host: process.env.HOSTNAME,
+        url: process.env.URL,
+        database: process.env.DATABASE,
+        username: process.env.USERNAME,
+        password: process.env.PASSWORD,
+        ssl: true,
+        extra: {
+            ssl: {
+                rejectUnauthorized: false,
+            },
+        },
+        port: 5432,
         logging: true,
         synchronize: true,
         entities: [Movie, User],
@@ -30,7 +42,7 @@ const main = async () => {
     const redis = new Redis();
     app.use(
         cors({
-            origin: "http://localhost:3000",
+            origin: process.env.CORS_ORIGIN,
             credentials: true,
         })
     );
@@ -44,7 +56,7 @@ const main = async () => {
                 disableTouch: true,
                 disableTTL: true,
             }),
-            secret: "keyboard cat", //krypterer userid key, express session setter cookie, req sender cookie, server dekrypterer, req til redis og får value userid
+            secret: process.env.SECRET, //krypterer userid key, express session setter cookie, req sender cookie, server dekrypterer, req til redis og får value userid
             resave: false,
             cookie: {
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
@@ -71,7 +83,7 @@ const main = async () => {
         cors: { origin: false },
     });
 
-    app.listen(4000, () => {
+    app.listen(process.env.PORT, () => {
         console.log("Server starterd on port 4000");
     });
 };

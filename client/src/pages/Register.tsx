@@ -21,10 +21,11 @@ const Register: React.FC<RegisterProps> = ({}) => {
                 <Formik
                     initialValues={{ email: "", username: "", password: "" }}
                     onSubmit={async (values, { setErrors }) => {
-                        const res = await regiserUser({ options: values });
+                        const res = await regiserUser({ options: values });                        
                         if (res.data?.registerUser.errors)
                             setErrors(toErrorMap(res.data.registerUser.errors));
-                        else if (res.data?.registerUser.user) router.push("/");
+                        else if (res.data?.registerUser.user)
+                            router.push("/Movies");
                     }}
                 >
                     {({ isSubmitting }) => (

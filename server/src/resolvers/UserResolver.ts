@@ -149,7 +149,9 @@ export class UserResolver {
             }
         }
         req.session!.userId = user.id;
-        return user;
+        console.log(user);
+
+        return { user };
     }
 
     @Mutation(() => UserResponse)

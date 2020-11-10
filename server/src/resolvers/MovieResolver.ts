@@ -3,17 +3,20 @@ import {
     Arg,
     Ctx,
     Field,
+    FieldResolver,
     InputType,
     Int,
     Mutation,
     ObjectType,
     Query,
     Resolver,
+    Root,
     UseMiddleware,
 } from "type-graphql";
 import { MyContext } from "src/types";
 import { isAuth } from "../enitities/middleware/isAUth";
 import { getConnection } from "typeorm";
+import { User } from "../enitities/User";
 
 //Resolver for queries med graphql
 @InputType()
@@ -38,12 +41,18 @@ class PaginatedMovies {
     hasMore: boolean;
 }
 
-@Resolver()
+@Resolver(Movie)
 export class MovieResolver {
+    @FieldResolver(() => User)
+    creator(@Root() movie: Movie) {
+        return User.findOne(movie.creatorId);
+    }
+
     @Query(() => PaginatedMovies)
     async getMovies(
         @Arg("limit", () => Int) limit: number,
-        @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+        @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
+        @Ctx() { req }: MyContext
     ): Promise<PaginatedMovies> {
         const realLimit = Math.min(10, limit);
         const realLimitPlusOne = Math.min(10, limit) + 1;
@@ -59,17 +68,19 @@ export class MovieResolver {
         //     });
         // }
         const replacements: any[] = [realLimitPlusOne];
+        // if (req.session?.userId) replacements.push(req.session.userId);
+        let cursorIdx = 3;
         if (cursor) {
             replacements.push(new Date(parseInt(cursor)));
+            cursorIdx = replacements.length;
         }
+        console.log(replacements);
+
         const movies = await getConnection().query(
             `
-          select m.*,
-          json_build_object('id', u.id, 'username', u.username, 'email', u.email) creator
-          from movie m
-          inner join public.user u on u.id = m."creatorId"
-          ${cursor ? `where m."createdAt" < $2` : ""}
-          order by m."createdAt" DESC
+          select * from movie
+          ${cursor ? `where "createdAt" < $${cursorIdx}` : ""}
+          order by "createdAt" DESC
           limit $1
           `,
             replacements
@@ -80,8 +91,11 @@ export class MovieResolver {
         };
     }
 
-    @Query(() => Movie)
-    async getOne(@Arg("id") id: number): Promise<Movie | undefined> {
+    @Query(() => Movie, { nullable: true })
+    @UseMiddleware(isAuth)
+    async getMovie(
+        @Arg("id", () => Int!) id: number
+    ): Promise<Movie | undefined> {
         return Movie.findOne(id);
     }
 
@@ -98,22 +112,34 @@ export class MovieResolver {
     }
 
     @Mutation(() => Movie, { nullable: true })
+    @UseMiddleware(isAuth)
     async updateMovie(
-        @Arg("id") id: number,
-        @Arg("title", () => String, { nullable: true }) title: string
+        @Arg("id", () => Int) id: number,
+        @Arg("input") input: MovieInput,
+        @Ctx() { req }: MyContext
     ): Promise<Movie | undefined> {
-        const movie = await Movie.findOne(id);
-        if (!movie) return undefined;
-        if (typeof movie !== "undefined") {
-            await Movie.update({ id }, { title });
-        }
-        return movie;
+        const result = await getConnection()
+            .createQueryBuilder()
+            .update(Movie)
+            .set(input)
+            .where('id = :id and "creatorId" = :creatorId', {
+                id,
+                creatorId: req.session!.userId,
+            })
+            .returning("*")
+            .execute();
+
+        return result.raw[0];
     }
 
     @Mutation(() => Boolean)
-    async deleteMovie(@Arg("id") id: number): Promise<boolean> {
+    @UseMiddleware(isAuth)
+    async deleteMovie(
+        @Arg("id", () => Int) id: number,
+        @Ctx() { req }: MyContext
+    ): Promise<boolean> {
         try {
-            await Movie.delete(id);
+            await Movie.delete({ id, creatorId: req.session!.userId });
             return true;
         } catch {
             return false;

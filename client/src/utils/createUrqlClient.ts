@@ -7,6 +7,7 @@ import {
 } from "urql";
 import { pipe, tap } from "wonka";
 import {
+    DeleteMovieMutationVariables,
     LoginMutation,
     LogoutMutation,
     MeDocument,
@@ -15,6 +16,7 @@ import {
 } from "../generated/graphql";
 import { bettUpdateQuery } from "./bettUpdateQuery";
 import Router from "next/router";
+import { isServer } from "./isServer";
 
 export const errorExchange: Exchange = ({ forward }) => (ops$) => {
     return pipe(
@@ -127,74 +129,87 @@ export const cursorPagination = (): Resolver => {
 
 function invalidateAllMovies(cache: Cache) {
     const allFields = cache.inspectFields("Query");
-    const fieldInfos = allFields.filter((info) => info.fieldName === "getMovies");
+    const fieldInfos = allFields.filter(
+        (info) => info.fieldName === "getMovies"
+    );
     fieldInfos.forEach((movie) => {
         cache.invalidate("Query", "getMovies", movie.arguments || {});
     });
 }
 
-export const createUrqlClient = (ssrExchange: any) => ({
-    url: "http://localhost:4000/graphql",
-    fetchOptions: {
-        credentials: "include" as const,
-    },
-    exchanges: [
-        dedupExchange,
-        cacheExchange({
-            keys: {
-                PaginatedMovies: () => null,
-            },
-            resolvers: {
-                Query: {
-                    getMovies: cursorPagination(),
+export const createUrqlClient = (ssrExchange: any, ctx: any) => {
+    let cookie = "";
+    if (isServer()) cookie = ctx?.req?.headers.cookie;
+    return {
+        url: process.env.NEXT_PUBLIC_API_URL as string,
+        fetchOptions: {
+            credentials: "include" as const,
+        },
+        exchanges: [
+            dedupExchange,
+            cacheExchange({
+                keys: {
+                    PaginatedMovies: () => null,
                 },
-            },
-            updates: {
-                Mutation: {
-                    login: (_result, args, cache, info) => {
-                        bettUpdateQuery<LoginMutation, MeQuery>(
-                            cache,
-                            { query: MeDocument },
-                            _result,
-                            (result, query) => {
-                                if (result.login.errors) return query;
-                                else
-                                    return {
-                                        me: result.login.user,
-                                    };
-                            }
-                        );
-                    },
-                    logout: (_result, args, cache, info) => {
-                        bettUpdateQuery<LogoutMutation, MeQuery>(
-                            cache,
-                            { query: MeDocument },
-                            _result,
-                            () => ({ me: null })
-                        );
-                    },
-                    registerUser: (_result, args, cache, info) => {
-                        bettUpdateQuery<RegisterMutation, MeQuery>(
-                            cache,
-                            { query: MeDocument },
-                            _result,
-                            (result, query) => {
-                                if (result.registerUser.errors) return query;
-                                else
-                                    return {
-                                        me: result.registerUser.user,
-                                    };
-                            }
-                        );
-                    },
-                    addMovie: (_result, args, cache, info) => {
-                        invalidateAllMovies(cache);
+                resolvers: {
+                    Query: {
+                        getMovies: cursorPagination(),
                     },
                 },
-            },
-        }),
-        errorExchange,
-        ssrExchange,
-        fetchExchange,
-    ],
-});
+                updates: {
+                    Mutation: {
+                        login: (_result, args, cache, info) => {
+                            bettUpdateQuery<LoginMutation, MeQuery>(
+                                cache,
+                                { query: MeDocument },
+                                _result,
+                                (result, query) => {
+                                    if (result.login.errors) return query;
+                                    else
+                                        return {
+                                            me: result.login.user,
+                                        };
+                                }
+                            );
+                        },
+                        logout: (_result, args, cache, info) => {
+                            bettUpdateQuery<LogoutMutation, MeQuery>(
+                                cache,
+                                { query: MeDocument },
+                                _result,
+                                () => ({ me: null })
+                            );
+                        },
+                        registerUser: (_result, args, cache, info) => {
+                            bettUpdateQuery<RegisterMutation, MeQuery>(
+                                cache,
+                                { query: MeDocument },
+                                _result,
+                                (result, query) => {
+                                    if (result.registerUser.errors)
+                                        return query;
+                                    else
+                                        return {
+                                            me: result.registerUser.user,
+                                        };
+                                }
+                            );
+                        },
+                        addMovie: (_result, args, cache, info) => {
+                            invalidateAllMovies(cache);
+                        },
+                        deleteMovie: (_result, args, cache, info) => {
+                            cache.invalidate({
+                                __typename: "Movie",
+                                id: (args as DeleteMovieMutationVariables).id,
+                            });
+                        },
+                    },
+                },
+            }),
+            errorExchange,
+            ssrExchange,
+            fetchExchange,
+        ],
+    };
+};
