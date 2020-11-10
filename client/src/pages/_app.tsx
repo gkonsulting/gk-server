@@ -1,13 +1,11 @@
 import { ThemeProvider, CSSReset, ColorModeProvider } from "@chakra-ui/core";
-import { withUrqlClient } from "next-urql";
 import theme from "../theme";
-import { createUrqlClient } from "../utils/createUrqlClient";
 import { ApolloProvider } from "@apollo/client";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 function MyApp({ Component, pageProps }: any) {
     const client = new ApolloClient({
-        uri: process.env.NEXT_PUBLIC_API_URL,
+        uri: "http://localhost:4000/graphql",
         cache: new InMemoryCache(),
         credentials: "include",
     });
@@ -23,4 +21,4 @@ function MyApp({ Component, pageProps }: any) {
     );
 }
 
-export default withUrqlClient(createUrqlClient)(MyApp);
+export default MyApp;

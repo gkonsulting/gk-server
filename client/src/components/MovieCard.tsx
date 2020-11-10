@@ -12,7 +12,6 @@ import {
 import React from "react";
 import { useDeleteMovieMutation, useMeQuery } from "../generated/graphql";
 import NextLink from "next/link";
-import { useRouter } from "next/router";
 interface MovieCardProps {
     id: number;
     title: string;
@@ -32,8 +31,8 @@ export const MovieCard: React.FC<MovieCardProps> = ({
     reason,
     creator,
 }) => {
-    const [, deleteMovie] = useDeleteMovieMutation();
-    const [{ data }] = useMeQuery();
+    const [deleteMovie] = useDeleteMovieMutation();
+    const { data } = useMeQuery();
 
     return (
         <Box
@@ -130,10 +129,13 @@ export const MovieCard: React.FC<MovieCardProps> = ({
                         size="sm"
                         variantColor="teal"
                         aria-label="Delete Movie"
-                        onClick={() => deleteMovie({ id: id })}
+                        onClick={() => deleteMovie({ variables: { id } })}
                         w={10}
                     />
-                    <NextLink href="/Movie/Update/[id]" as={`/Movie/Update/${id}`}>
+                    <NextLink
+                        href="/Movie/Update/[id]"
+                        as={`/Movie/Update/${id}`}
+                    >
                         <Link>
                             <IconButton
                                 icon="edit"

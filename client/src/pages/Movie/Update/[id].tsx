@@ -1,19 +1,18 @@
 import { Button, Flex } from "@chakra-ui/core";
 import { Formik, Form } from "formik";
-import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import React from "react";
 import { InputField } from "../../../components/InputField";
 import { Navbar } from "../../../components/Navbar";
 import { Wrapper } from "../../../components/Wrapper";
 import { useUpdateMovieMutation } from "../../../generated/graphql";
-import { createUrqlClient } from "../../../utils/createUrqlClient";
 import { useGetMovieFromUrl } from "../../../utils/useGetMovieFromUrl";
 
+
 export const updateMovie: React.FC<{}> = ({}) => {
-    const [{ data, error, fetching }] = useGetMovieFromUrl();
+    const { data, error, loading } = useGetMovieFromUrl();
     const movie = data?.getMovie;
-    const [, updateMovie] = useUpdateMovieMutation();
+    const [updateMovie] = useUpdateMovieMutation();
     const router = useRouter();
 
     return (
@@ -80,4 +79,4 @@ export const updateMovie: React.FC<{}> = ({}) => {
     );
 };
 
-export default withUrqlClient(createUrqlClient)(updateMovie);
+export default updateMovie;

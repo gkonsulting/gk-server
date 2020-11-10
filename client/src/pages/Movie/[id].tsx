@@ -1,6 +1,4 @@
 import React from "react";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../../utils/createUrqlClient";
 import {
     Box,
     Badge,
@@ -21,11 +19,11 @@ import NextLink from "next/link";
 
 const Movie = ({}) => {
     userAuth();
-    const [{ data, error, fetching }] = useGetMovieFromUrl();
-    const [, deleteMovie] = useDeleteMovieMutation();
-    const [{ data: meData }] = useMeQuery();
+    const { data, error, loading }= useGetMovieFromUrl();
+    const [deleteMovie] = useDeleteMovieMutation();
+    const { data: meData } = useMeQuery();
 
-    if (fetching) {
+    if (loading) {
         return (
             <Box>
                 <div>loading...</div>
@@ -179,4 +177,4 @@ const Movie = ({}) => {
     );
 };
 
-export default withUrqlClient(createUrqlClient)(Movie);
+export default Movie;

@@ -8,13 +8,11 @@ import { Wrapper } from "../../components/Wrapper";
 import { toErrorMap } from "../../utils/toErrorMap";
 import { useChangePasswordMutation } from "../../generated/graphql";
 import { useRouter } from "next/router";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../../utils/createUrqlClient";
 import NextLink from "next/link";
 
 export const ResetPassword: NextPage = () => {
     const router = useRouter();
-    const [, changePassword] = useChangePasswordMutation();
+    const [changePassword] = useChangePasswordMutation();
     const [tokenError, setTokenError] = useState("");
     return (
         <>
@@ -75,4 +73,4 @@ export const ResetPassword: NextPage = () => {
     );
 };
 
-export default withUrqlClient(createUrqlClient)(ResetPassword);
+export default ResetPassword;

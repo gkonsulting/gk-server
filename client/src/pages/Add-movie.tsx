@@ -6,12 +6,10 @@ import { Navbar } from "../components/Navbar";
 import { Wrapper } from "../components/Wrapper";
 import { useAddMovieMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 import { userAuth } from "../utils/userAuth";
 const AddMovie: React.FC<{}> = ({}) => {
     userAuth(); // Sjekker om bruker er logget inn, hvis ikke navigeres brukeren til login
-    const [, addMovie] = useAddMovieMutation();
+    const [addMovie] = useAddMovieMutation();
     const router = useRouter();
     return (
         <>
@@ -26,8 +24,10 @@ const AddMovie: React.FC<{}> = ({}) => {
                         rating: "",
                     }}
                     onSubmit={async (values) => {
-                        const { error } = await addMovie({ input: values });
-                        if (!error) {
+                        const { errors } = await addMovie({
+                            variables: { input: values },
+                        });
+                        if (!errors) {
                             router.push("/Movies");
                         }
                     }}
@@ -75,4 +75,4 @@ const AddMovie: React.FC<{}> = ({}) => {
         </>
     );
 };
-export default withUrqlClient(createUrqlClient)(AddMovie);
+export default AddMovie;

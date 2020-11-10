@@ -7,12 +7,10 @@ import { useRegisterMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
 import { Navbar } from "../components/Navbar";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 interface RegisterProps {}
 
 const Register: React.FC<RegisterProps> = ({}) => {
-    const [, regiserUser] = useRegisterMutation();
+    const [regiserUser] = useRegisterMutation();
     const router = useRouter();
     return (
         <>
@@ -63,4 +61,4 @@ const Register: React.FC<RegisterProps> = ({}) => {
     );
 };
 
-export default withUrqlClient(createUrqlClient)(Register);
+export default Register;

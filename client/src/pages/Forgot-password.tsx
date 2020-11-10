@@ -1,16 +1,14 @@
-import { Flex, Button, Link, Box } from "@chakra-ui/core";
+import { Flex, Button, Box } from "@chakra-ui/core";
 import { Formik, Form } from "formik";
-import { withUrqlClient } from "next-urql";
 import React, { useState } from "react";
 import { InputField } from "../components/InputField";
 import { Navbar } from "../components/Navbar";
 import { Wrapper } from "../components/Wrapper";
 import { useResetPasswordMutation } from "../generated/graphql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 
 export const ForgotPassword: React.FC<{}> = ({}) => {
     const [complete, setComplete] = useState(false);
-    const [, resetPassword] = useResetPasswordMutation();
+    const [resetPassword] = useResetPasswordMutation();
     return (
         <>
             <Navbar />
@@ -53,4 +51,4 @@ export const ForgotPassword: React.FC<{}> = ({}) => {
         </>
     );
 };
-export default withUrqlClient(createUrqlClient)(ForgotPassword);
+export default ForgotPassword;

@@ -1,7 +1,5 @@
 import { Wrapper } from "../components/Wrapper";
 import { Navbar } from "../components/Navbar";
-import { withUrqlClient } from "next-urql";
-import { createUrqlClient } from "../utils/createUrqlClient";
 import { useGetMoviesQuery } from "../generated/graphql";
 import { MovieCard } from "../components/MovieCard";
 import { Button, Flex, Text } from "@chakra-ui/core";
@@ -12,10 +10,10 @@ const Movies = () => {
         limit: 3,
         cursor: null as null | string,
     });
-    const [{ data, fetching }] = useGetMoviesQuery({
+    const { data, loading } = useGetMoviesQuery({
         variables,
     });
-    if (!fetching && !data) {
+    if (!loading && !data) {
         return <div>No data</div>;
     }
 
@@ -26,7 +24,7 @@ const Movies = () => {
                 <Text textAlign="center" fontSize="6xl">
                     Movies
                 </Text>
-                {!data && fetching ? (
+                {!data && loading ? (
                     <div>Loading...</div>
                 ) : (
                     <>
@@ -59,7 +57,7 @@ const Movies = () => {
                             <Flex justifyContent="center">
                                 <Button
                                     variantColor="teal"
-                                    isLoading={fetching}
+                                    isLoading={loading}
                                     onClick={() => {
                                         setVariables({
                                             limit: variables.limit,
@@ -83,4 +81,4 @@ const Movies = () => {
     );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Movies);
+export default Movies;

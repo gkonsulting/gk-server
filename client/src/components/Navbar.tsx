@@ -4,16 +4,19 @@ import { DarkModeSwitch } from "./DarkModeSwitch";
 import NextLink from "next/link";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { isServer } from "../utils/isServer";
+import { useApolloClient } from "@apollo/client";
 
 interface NavbarProps {}
 
 export const Navbar: React.FC<NavbarProps> = (props) => {
-    const [{ fetching: logoutFetching }, logout] = useLogoutMutation();
-    const [{ data, fetching }] = useMeQuery({
-        pause: isServer(), // fetcher ikke CS, bare SSR
+    const [logout, { loading: logoutFetching }] = useLogoutMutation();
+    const { data, loading } = useMeQuery({
+        skip: isServer(), // fetcher ikke CS, bare SSR
     });
+    const apolloClient = useApolloClient();
+
     let body = null;
-    if (fetching) {
+    if (loading) {
     } else if (!data?.me) {
         body = (
             <>
@@ -71,6 +74,7 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
                     <Button
                         onClick={() => {
                             logout();
+                            apolloClient.resetStore();
                         }}
                         isLoading={logoutFetching}
                         variantColor="teal"
