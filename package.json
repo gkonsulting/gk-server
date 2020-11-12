@@ -8,7 +8,7 @@
     "gen-env": "gen-env-types .env -o src/env.d.ts -e .",
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
-    "start": "ts-node src/index.js"
+    "start": "ts-node dist/index.js"
   },
   "keywords": [],
   "author": "",
