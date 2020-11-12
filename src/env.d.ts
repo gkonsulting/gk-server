@@ -12,5 +12,7 @@ declare namespace NodeJS {
     REDIS_PORT : string;
     REDIS_HOST : string;
     REDIS_PASSWORD : string;
+    GK_MAIL : string;
+    GK_PASSWORD : string;
   }
 }
