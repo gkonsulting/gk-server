@@ -51,8 +51,7 @@ export class MovieResolver {
     @Query(() => PaginatedMovies)
     async getMovies(
         @Arg("limit", () => Int) limit: number,
-        @Arg("cursor", () => String, { nullable: true }) cursor: string | null,
-        @Ctx() { req }: MyContext
+        @Arg("cursor", () => String, { nullable: true }) cursor: string | null
     ): Promise<PaginatedMovies> {
         const realLimit = Math.min(10, limit);
         const realLimitPlusOne = Math.min(10, limit) + 1;

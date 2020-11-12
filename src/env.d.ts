@@ -7,6 +7,10 @@ declare namespace NodeJS {
     PASSWORD : string;
     SECRET : string;
     PORT : string;
+    HEROKU_PORT : string;
     CORS_ORIGIN : string;
+    REDIS_PORT : string;
+    REDIS_HOST : string;
+    REDIS_PASSWORD : string;
   }
 }
