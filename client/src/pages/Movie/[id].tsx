@@ -16,12 +16,16 @@ import { Wrapper } from "../../components/Wrapper";
 import { userAuth } from "../../utils/userAuth";
 import { useDeleteMovieMutation, useMeQuery } from "../../generated/graphql";
 import NextLink from "next/link";
+import { withApollo } from "../../utils/withApollo";
+import { useRouter } from "next/router";
 
 const Movie = ({}) => {
-    userAuth();
-    const { data, error, loading }= useGetMovieFromUrl();
+    const { data, error, loading } = useGetMovieFromUrl();
     const [deleteMovie] = useDeleteMovieMutation();
     const { data: meData } = useMeQuery();
+    console.log(data?.getMovie?.id);
+    const router = useRouter();
+    userAuth(router.query.id);
 
     if (loading) {
         return (
@@ -103,7 +107,7 @@ const Movie = ({}) => {
                                                 color={
                                                     i <
                                                     parseInt(
-                                                        data.getMovie.rating
+                                                        data!.getMovie!.rating
                                                     )
                                                         ? "teal.500"
                                                         : "gray.300"
@@ -149,7 +153,18 @@ const Movie = ({}) => {
                                     variantColor="teal"
                                     aria-label="Delete Movie"
                                     onClick={() =>
-                                        deleteMovie({ id: data.getMovie.id })
+                                        deleteMovie({
+                                            variables: {
+                                                id: data.getMovie?.id,
+                                            },
+                                            update: (cache) => {
+                                                cache.evict({
+                                                    id:
+                                                        "Movie:" +
+                                                        data.getMovie?.id,
+                                                });
+                                            },
+                                        })
                                     }
                                     w={10}
                                 />
@@ -177,4 +192,4 @@ const Movie = ({}) => {
     );
 };
 
-export default Movie;
+export default withApollo({ ssr: true })(Movie);

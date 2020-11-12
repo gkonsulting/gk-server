@@ -78,8 +78,8 @@ export const MovieCard: React.FC<MovieCardProps> = ({
                             </Box>
 
                             <Box h={75}>
-                                {description.length > 125
-                                    ? description.slice(0, 125) + "..."
+                                {description.length > 115
+                                    ? description.slice(0, 115) + "..."
                                     : description}
                             </Box>
 
@@ -129,7 +129,18 @@ export const MovieCard: React.FC<MovieCardProps> = ({
                         size="sm"
                         variantColor="teal"
                         aria-label="Delete Movie"
-                        onClick={() => deleteMovie({ variables: { id } })}
+                        onClick={() =>
+                            deleteMovie({
+                                variables: {
+                                    id: id,
+                                },
+                                update: (cache) => {
+                                    cache.evict({
+                                        id: "Movie:" + id,
+                                    });
+                                },
+                            })
+                        }
                         w={10}
                     />
                     <NextLink

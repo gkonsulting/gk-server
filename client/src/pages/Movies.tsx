@@ -4,15 +4,19 @@ import { useGetMoviesQuery } from "../generated/graphql";
 import { MovieCard } from "../components/MovieCard";
 import { Button, Flex, Text } from "@chakra-ui/core";
 import React, { useState } from "react";
+import { withApollo } from "../utils/withApollo";
+import { userAuth } from "../utils/userAuth";
 
 const Movies = () => {
-    const [variables, setVariables] = useState({
-        limit: 3,
-        cursor: null as null | string,
+    userAuth();
+    const { data, loading, error, variables, fetchMore } = useGetMoviesQuery({
+        variables: {
+            limit: 3,
+            cursor: null,
+        },
+        notifyOnNetworkStatusChange: true,
     });
-    const { data, loading } = useGetMoviesQuery({
-        variables,
-    });
+
     if (!loading && !data) {
         return <div>No data</div>;
     }
@@ -59,13 +63,15 @@ const Movies = () => {
                                     variantColor="teal"
                                     isLoading={loading}
                                     onClick={() => {
-                                        setVariables({
-                                            limit: variables.limit,
-                                            cursor:
-                                                data?.getMovies.movies[
-                                                    data.getMovies.movies
-                                                        .length - 1
-                                                ].createdAt,
+                                        fetchMore({
+                                            variables: {
+                                                limit: variables?.limit,
+                                                cursor:
+                                                    data?.getMovies.movies[
+                                                        data.getMovies.movies
+                                                            .length - 1
+                                                    ].createdAt,
+                                            },
                                         });
                                     }}
                                     m={5}
@@ -81,4 +87,4 @@ const Movies = () => {
     );
 };
 
-export default Movies;
+export default withApollo({ ssr: true })(Movies);

@@ -7,9 +7,11 @@ import { Navbar } from "../../../components/Navbar";
 import { Wrapper } from "../../../components/Wrapper";
 import { useUpdateMovieMutation } from "../../../generated/graphql";
 import { useGetMovieFromUrl } from "../../../utils/useGetMovieFromUrl";
-
+import { userAuth } from "../../../utils/userAuth";
+import { withApollo } from "../../../utils/withApollo";
 
 export const updateMovie: React.FC<{}> = ({}) => {
+    userAuth();
     const { data, error, loading } = useGetMovieFromUrl();
     const movie = data?.getMovie;
     const [updateMovie] = useUpdateMovieMutation();
@@ -21,16 +23,18 @@ export const updateMovie: React.FC<{}> = ({}) => {
             <Wrapper variant="small">
                 <Formik
                     initialValues={{
-                        title: movie?.title,
-                        description: movie?.description,
-                        poster: movie?.poster,
-                        reason: movie?.reason,
-                        rating: movie?.rating,
+                        title: movie?.title as string,
+                        description: movie?.description as string,
+                        poster: movie?.poster as string,
+                        reason: movie?.reason as string,
+                        rating: movie?.rating as string,
                     }}
                     onSubmit={async (values) => {
                         await updateMovie({
-                            id: movie?.id,
-                            input: values,
+                            variables: {
+                                id: movie?.id,
+                                input: values,
+                            },
                         });
                         router.back();
                     }}
@@ -79,4 +83,4 @@ export const updateMovie: React.FC<{}> = ({}) => {
     );
 };
 
-export default updateMovie;
+export default withApollo({ ssr: true })(updateMovie);

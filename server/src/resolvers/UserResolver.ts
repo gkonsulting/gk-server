@@ -53,7 +53,10 @@ export class UserResolver {
             };
         }
         const key = RESET_PASSWORD_PREFIX + token;
+        
         const userId = await redis.get(key);
+        console.log(userId);
+        
         if (!userId) {
             return {
                 errors: [
@@ -95,6 +98,7 @@ export class UserResolver {
         const user = await User.findOne({ where: { email } }); // hvis man søker etter kolonne som ikke er PK
         if (!user) return true;
         const token = v4();
+
         await redis.set(
             RESET_PASSWORD_PREFIX + token,
             user.id,
@@ -195,7 +199,7 @@ export class UserResolver {
 
     // Fjerner session i redis, lager promise som venter på å fjerne session ved bruk av callback og fjerner cookie
     @Mutation(() => Boolean)
-    logout(@Ctx() { req, res }: MyContext) {
+    async logout(@Ctx() { req, res }: MyContext) {
         return new Promise((resolve) =>
             req.session?.destroy((err) => {
                 res.clearCookie(COOKIE_NAME);

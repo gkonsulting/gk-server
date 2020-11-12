@@ -1,5 +1,6 @@
 import { Wrapper } from "../components/Wrapper";
 import { Navbar } from "../components/Navbar";
+import { withApollo } from "../utils/withApollo";
 
 const Index = () => {
     return (
@@ -12,4 +13,4 @@ const Index = () => {
     );
 };
 
-export default Index;
+export default withApollo({ ssr: true })(Index);

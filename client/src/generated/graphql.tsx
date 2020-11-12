@@ -166,7 +166,7 @@ export type RegularUserResponseFragment = (
 
 export type UserInfoFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'id' | 'username'>
+  & Pick<User, 'id' | 'username' | 'email'>
 );
 
 export type ChangePasswordMutationVariables = Exact<{
@@ -345,6 +345,7 @@ export const UserInfoFragmentDoc = gql`
     fragment UserInfo on User {
   id
   username
+  email
 }
     `;
 export const RegularUserResponseFragmentDoc = gql`

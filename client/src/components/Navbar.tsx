@@ -5,6 +5,7 @@ import NextLink from "next/link";
 import { useLogoutMutation, useMeQuery } from "../generated/graphql";
 import { isServer } from "../utils/isServer";
 import { useApolloClient } from "@apollo/client";
+import { useRouter } from "next/router";
 
 interface NavbarProps {}
 
@@ -14,6 +15,7 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
         skip: isServer(), // fetcher ikke CS, bare SSR
     });
     const apolloClient = useApolloClient();
+    const router = useRouter();
 
     let body = null;
     if (loading) {
@@ -62,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
                     </NextLink>
                 </Box>
                 <Box mt={{ base: 4, md: 0 }} mr={5}>
-                    <NextLink href="/Profile">
+                    <NextLink href="/User/[id]" as={`/User/${data.me.id}`}>
                         <Link _hover={{ textDecoration: "none" }}>
                             <Button variantColor="teal" border="1px">
                                 User: {data.me.username}
@@ -75,6 +77,7 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
                         onClick={() => {
                             logout();
                             apolloClient.resetStore();
+                            router.push("/Login");
                         }}
                         isLoading={logoutFetching}
                         variantColor="teal"

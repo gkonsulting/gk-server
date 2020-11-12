@@ -7,6 +7,7 @@ import { Wrapper } from "../components/Wrapper";
 import { useAddMovieMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
 import { userAuth } from "../utils/userAuth";
+import { withApollo } from "../utils/withApollo";
 const AddMovie: React.FC<{}> = ({}) => {
     userAuth(); // Sjekker om bruker er logget inn, hvis ikke navigeres brukeren til login
     const [addMovie] = useAddMovieMutation();
@@ -26,6 +27,9 @@ const AddMovie: React.FC<{}> = ({}) => {
                     onSubmit={async (values) => {
                         const { errors } = await addMovie({
                             variables: { input: values },
+                            update: (cache) => {
+                                cache.evict({ fieldName: "getMovies" });
+                            },
                         });
                         if (!errors) {
                             router.push("/Movies");
@@ -75,4 +79,4 @@ const AddMovie: React.FC<{}> = ({}) => {
         </>
     );
 };
-export default AddMovie;
+export default withApollo({ ssr: false })(AddMovie);

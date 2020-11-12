@@ -5,6 +5,7 @@ import { InputField } from "../components/InputField";
 import { Navbar } from "../components/Navbar";
 import { Wrapper } from "../components/Wrapper";
 import { useResetPasswordMutation } from "../generated/graphql";
+import { withApollo } from "../utils/withApollo";
 
 export const ForgotPassword: React.FC<{}> = ({}) => {
     const [complete, setComplete] = useState(false);
@@ -16,7 +17,7 @@ export const ForgotPassword: React.FC<{}> = ({}) => {
                 <Formik
                     initialValues={{ email: "" }}
                     onSubmit={async (values) => {
-                        await resetPassword(values);
+                        await resetPassword({ variables: values });
                         setComplete(true);
                     }}
                 >
@@ -51,4 +52,4 @@ export const ForgotPassword: React.FC<{}> = ({}) => {
         </>
     );
 };
-export default ForgotPassword;
+export default withApollo({ ssr: false })(ForgotPassword);
