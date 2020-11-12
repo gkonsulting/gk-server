@@ -1,5 +1,6 @@
 {
   "name": "server",
+  "homepage": "https://guttakrutt-backend.herokuapp.com",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
