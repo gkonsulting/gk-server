@@ -1,6 +1,0 @@
-mutation updateMovie($id: Int!, $input: MovieInput!){
-    updateMovie(id: $id, input: $input){
-        id
-        ...MovieUpdate
-    }
-}

@@ -1,5 +1,0 @@
-mutation Register($options: UserCredentials!) {
-    registerUser(options: $options) {
-        ...RegularUserResponse
-    }
-}

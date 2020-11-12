@@ -1,3 +1,0 @@
-mutation deleteMovie($id: Int!){
-    deleteMovie(id: $id)
-}

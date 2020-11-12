@@ -1,8 +1,0 @@
-query getMovies($limit: Int!, $cursor: String) {
-    getMovies(cursor: $cursor, limit: $limit) {
-        hasMore
-        movies {
-            ...MovieInfo
-        }
-    }
-}
