@@ -24,7 +24,8 @@
     "next-apollo": "^5.0.4",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-is": "^17.0.1"
+    "react-is": "^17.0.1",
+    "react-player": "^2.6.2"
   },
   "license": "MIT",
   "devDependencies": {

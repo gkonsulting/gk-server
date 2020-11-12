@@ -46,6 +46,15 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
         body = (
             <>
                 <Box mt={{ base: 4, md: 0 }} mr={5}>
+                    <NextLink href="/Vlog">
+                        <Link _hover={{ textDecoration: "none" }}>
+                            <Button variantColor="teal" border="1px">
+                                Vlog
+                            </Button>
+                        </Link>
+                    </NextLink>
+                </Box>
+                <Box mt={{ base: 4, md: 0 }} mr={5}>
                     <NextLink href="/Movies">
                         <Link _hover={{ textDecoration: "none" }}>
                             <Button variantColor="teal" border="1px">
