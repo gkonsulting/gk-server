@@ -69,7 +69,7 @@ const main = async () => {
             resave: false,
             cookie: {
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
-                httpOnly: true, // gir ikke tilgang til cookie
+                // httpOnly: true, // gir ikke tilgang til cookie
                 sameSite: "lax", // csrf
                 secure: __prod__, // hvis true funker det bare i https
             },
