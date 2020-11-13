@@ -30,7 +30,7 @@ const main = async () => {
                 rejectUnauthorized: false,
             },
         },
-        port: parseInt(process.env.HEROKU_PORT),
+        port: 5432,
         logging: true,
         synchronize: true,
         entities: [Movie, User],
@@ -39,13 +39,7 @@ const main = async () => {
     await conn.runMigrations();
     const app = express();
     const RedisStore = connectRedis(session);
-    const redis = new Redis({
-        port: parseInt(process.env.REDIS_PORT),
-        host: process.env.REDIS_HOST,
-        family: 4,
-        password: process.env.REDIS_PASSWORD,
-    });
-
+    const redis = new Redis();
     app.use(
         cors({
             origin: process.env.CORS_ORIGIN,
@@ -89,8 +83,9 @@ const main = async () => {
         cors: { origin: false },
     });
 
-    app.listen(process.env.PORT, () => {
-        console.log("Server starterd on port 4000");
+    const port = process.env.PORT || 4000;
+    app.listen(port, () => {
+        console.log(`Server starterd on port ${port}`);
     });
 };
 main().catch((err) => {
