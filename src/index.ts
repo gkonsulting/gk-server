@@ -72,7 +72,6 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
                 sameSite: __prod__ ? "none" : "lax", // csrf
                 secure: __prod__, // hvis true funker det bare i https
-                httpOnly: !__prod__
             },
             saveUninitialized: false,
         })
