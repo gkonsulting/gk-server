@@ -65,12 +65,14 @@ const main = async () => {
                 disableTouch: true,
                 disableTTL: true,
             }),
+            
             secret: process.env.SECRET, //krypterer userid key, express session setter cookie, req sender cookie, server dekrypterer, req til redis og får value userid
             resave: false,
             cookie: {
+                
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
                 // httpOnly: true, // gir ikke tilgang til cookie
-                sameSite: "lax", // csrf
+                sameSite: "none", // csrf
                 secure: __prod__, // hvis true funker det bare i https
             },
             saveUninitialized: false,
