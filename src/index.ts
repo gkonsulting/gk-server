@@ -69,11 +69,12 @@ const main = async () => {
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
                 httpOnly: true, // gir ikke tilgang til cookie
                 sameSite: "lax", // csrf
-                secure: __prod__, // hvis true funker det bare i https
+                secure: true, // hvis true funker det bare i https
             },
             saveUninitialized: false,
         })
     );
+    
 
     // Apolloserver setup, lager schema med resolvers
     const apolloServer = new ApolloServer({
