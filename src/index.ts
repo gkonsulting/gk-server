@@ -44,6 +44,7 @@ const main = async () => {
         cors({
             origin: process.env.CORS_ORIGIN,
             credentials: true,
+            preflightContinue: true,
         })
     );
 
