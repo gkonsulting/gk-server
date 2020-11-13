@@ -52,6 +52,10 @@ const main = async () => {
         })
     );
 
+    if (app.get("env") === "production") {
+        app.set("trust proxy", 1); // trust first proxy
+    }
+
     // Session med express og redis, redis er in-memory datastruktur(dict/hashmap)
     app.use(
         session({
