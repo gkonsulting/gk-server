@@ -66,6 +66,7 @@ const main = async () => {
             secret: process.env.SECRET, //krypterer userid key, express session setter cookie, req sender cookie, server dekrypterer, req til redis og får value userid
             resave: false,
             cookie: {
+                domain: "https://guttakrutt-frontend.herokuapp.com/",
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
                 httpOnly: true, // gir ikke tilgang til cookie
                 sameSite: "lax", // csrf
@@ -74,7 +75,6 @@ const main = async () => {
             saveUninitialized: false,
         })
     );
-    
 
     // Apolloserver setup, lager schema med resolvers
     const apolloServer = new ApolloServer({
