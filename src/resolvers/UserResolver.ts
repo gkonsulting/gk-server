@@ -107,7 +107,7 @@ export class UserResolver {
         ); // 3 dager
         await sendEmail(
             email,
-            `<a href="http://localhost:3000/Reset-password/${token}">Reset password</a>`
+            `<a href="${process.env.CORS_ORIGIN}/Reset-password/${token}">Reset password</a>`
         );
         return true;
     }

@@ -52,7 +52,7 @@ const main = async () => {
         })
     );
 
-    if (app.get("env") === "production") {        
+    if (app.get("env") === "production") {
         app.set("trust proxy", 1); // trust first proxy
         // sess.cookie.secure = true; // serve secure cookies
     }
@@ -65,15 +65,14 @@ const main = async () => {
                 disableTouch: true,
                 disableTTL: true,
             }),
-            
+
             secret: process.env.SECRET, //krypterer userid key, express session setter cookie, req sender cookie, server dekrypterer, req til redis og får value userid
             resave: false,
             cookie: {
-                
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
-                // httpOnly: true, // gir ikke tilgang til cookie
-                sameSite: "none", // csrf
+                sameSite: __prod__ ? "none" : "lax", // csrf
                 secure: __prod__, // hvis true funker det bare i https
+                httpOnly: !__prod__
             },
             saveUninitialized: false,
         })
