@@ -52,8 +52,10 @@ const main = async () => {
         })
     );
 
-    app.set("trust proxy", 1); // trust first proxy
-
+    if (app.get("env") === "production") {        
+        app.set("trust proxy", 1); // trust first proxy
+        // sess.cookie.secure = true; // serve secure cookies
+    }
     // Session med express og redis, redis er in-memory datastruktur(dict/hashmap)
     app.use(
         session({
@@ -66,11 +68,10 @@ const main = async () => {
             secret: process.env.SECRET, //krypterer userid key, express session setter cookie, req sender cookie, server dekrypterer, req til redis og får value userid
             resave: false,
             cookie: {
-                domain: "https://guttakrutt-frontend.herokuapp.com/",
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
                 httpOnly: true, // gir ikke tilgang til cookie
                 sameSite: "lax", // csrf
-                secure: true, // hvis true funker det bare i https
+                secure: __prod__, // hvis true funker det bare i https
             },
             saveUninitialized: false,
         })
