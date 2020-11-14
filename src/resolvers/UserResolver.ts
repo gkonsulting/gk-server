@@ -53,10 +53,10 @@ export class UserResolver {
             };
         }
         const key = RESET_PASSWORD_PREFIX + token;
-        
+
         const userId = await redis.get(key);
         console.log(userId);
-        
+
         if (!userId) {
             return {
                 errors: [
@@ -200,7 +200,9 @@ export class UserResolver {
     // Fjerner session i redis, lager promise som venter på å fjerne session ved bruk av callback og fjerner cookie
     @Mutation(() => Boolean)
     async logout(@Ctx() { req, res }: MyContext) {
-        return new Promise((resolve) =>
+        console.log(req.session?.cookie);
+        console.log(req.session);
+        return await new Promise((resolve) =>
             req.session?.destroy((err) => {
                 res.clearCookie(COOKIE_NAME);
                 if (err) {
@@ -208,6 +210,7 @@ export class UserResolver {
                     resolve(false);
                     return;
                 }
+                console.log(req.session?.cookie);
                 resolve(true);
             })
         );
