@@ -11,10 +11,10 @@ import {
     Query,
     Resolver,
     Root,
-    UseMiddleware,
+    // UseMiddleware,
 } from "type-graphql";
 import { MyContext } from "src/types";
-import { isAuth } from "../enitities/middleware/isAUth";
+// import { isAuth } from "../enitities/middleware/isAUth";
 import { getConnection } from "typeorm";
 import { User } from "../enitities/User";
 
