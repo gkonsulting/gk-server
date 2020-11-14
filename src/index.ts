@@ -64,7 +64,6 @@ const main = async () => {
                 disableTouch: true,
                 disableTTL: true,
             }),
-
             secret: process.env.SECRET, //krypterer userid key, express session setter cookie, req sender cookie, server dekrypterer, req til redis og får value userid
             resave: false,
             cookie: {
