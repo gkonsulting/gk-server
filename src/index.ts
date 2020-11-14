@@ -71,9 +71,9 @@ const main = async () => {
             cookie: {
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
-                sameSite: __prod__ ? "none" : "lax", // csrf
+                sameSite: true, // csrf
                 secure: __prod__, // hvis true funker det bare i https
-                // httpOnly: true,
+                httpOnly: true,
             },
             saveUninitialized: false,
         })
