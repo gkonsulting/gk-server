@@ -13,10 +13,13 @@ import { createConnection } from "typeorm";
 import { Movie } from "./enitities/Movie";
 import { User } from "./enitities/User";
 import path from "path";
+import { Vote } from "./enitities/Vote";
+import { createUserLoader } from "./utils/createUserLoader";
+import { createVoteLoader } from "./utils/createVoteLoader";
 require("dotenv").config();
 
 const main = async () => {
-    const conn = await createConnection({
+    await createConnection({
         type: "postgres",
         host: process.env.HOSTNAME,
         url: process.env.URL,
@@ -32,10 +35,10 @@ const main = async () => {
         port: 5432,
         logging: true,
         synchronize: true,
-        entities: [Movie, User],
+        entities: [Movie, User, Vote],
         migrations: [path.join(__dirname, "./migrations/*")],
     });
-    await conn.runMigrations();
+    //await conn.runMigrations();
     const app = express();
     const RedisStore = connectRedis(session);
     const redis = new Redis({
@@ -83,7 +86,13 @@ const main = async () => {
             resolvers: [MovieResolver, UserResolver],
             validate: false,
         }),
-        context: ({ req, res }): MyContext => ({ req, res, redis }),
+        context: ({ req, res }): MyContext => ({
+            req,
+            res,
+            redis,
+            userLoader: createUserLoader(),
+            voteLoader: createVoteLoader(),
+        }),
     });
 
     // Middleware

@@ -13,10 +13,11 @@ import {
     Root,
     UseMiddleware,
 } from "type-graphql";
-import { MyContext } from "src/types";
+import { MyContext } from "../types";
 import { isAuth } from "../enitities/middleware/isAUth";
 import { getConnection } from "typeorm";
 import { User } from "../enitities/User";
+import { Vote } from "../enitities/Vote";
 
 //Resolver for queries med graphql
 @InputType()
@@ -44,8 +45,84 @@ class PaginatedMovies {
 @Resolver(Movie)
 export class MovieResolver {
     @FieldResolver(() => User)
-    creator(@Root() movie: Movie) {
-        return User.findOne(movie.creatorId);
+    creator(@Root() movie: Movie, @Ctx() { userLoader }: MyContext) {
+        return userLoader.load(movie.creatorId);
+    }
+
+    @FieldResolver(() => Int, { nullable: true })
+    async voteStatus(
+        @Root() movie: Movie,
+        @Ctx() { voteLoader, req }: MyContext
+    ) {
+        if (!req.session?.userId) {
+            return null;
+        }
+
+        const vote = await voteLoader.load({
+            movieId: movie.id,
+            userId: req.session.userId,
+        });
+
+        return vote ? vote.value : null;
+    }
+
+    @Mutation(() => Boolean)
+    @UseMiddleware(isAuth)
+    async vote(
+        @Arg("movieId", () => Int) movieId: number,
+        @Arg("value", () => Int) value: number,
+        @Ctx() { req }: MyContext
+    ) {
+        const isVote = value !== -1;
+        const realValue = isVote ? 1 : -1;
+        const { userId } = req.session!;
+
+        const vote = await Vote.findOne({ where: { movieId, userId } });
+
+        // the user has voted on the movie before
+        // and they are changing their vote
+        if (vote && vote.value !== realValue) {
+            await getConnection().transaction(async (tm) => {
+                await tm.query(
+                    `
+                    update vote
+                    set value = $1
+                    where "movieId" = $2 and "userId" = $3
+                        `,
+                    [realValue, movieId, userId]
+                );
+
+                await tm.query(
+                    `
+                    update movie
+                    set points = points + $1
+                    where id = $2
+                    `,
+                    [2 * realValue, movieId]
+                );
+            });
+        } else if (!vote) {
+            // has never voted before
+            await getConnection().transaction(async (tm) => {
+                await tm.query(
+                    `
+                insert into vote ("userId", "movieId", value)
+                values ($1, $2, $3)
+                    `,
+                    [userId, movieId, realValue]
+                );
+
+                await tm.query(
+                    `
+                update movie
+                set points = points + $1
+                where id = $2
+                `,
+                    [realValue, movieId]
+                );
+            });
+        }
+        return true;
     }
 
     @Query(() => PaginatedMovies)
@@ -54,7 +131,7 @@ export class MovieResolver {
         @Arg("cursor", () => String, { nullable: true }) cursor: string | null
     ): Promise<PaginatedMovies> {
         const realLimit = Math.min(10, limit);
-        const realLimitPlusOne = Math.min(10, limit) + 1;
+        const realLimitPlusOne = realLimit + 1;
         // const qb = getConnection()
         //     .getRepository(Movie)
         //     .createQueryBuilder("movie")
@@ -68,22 +145,24 @@ export class MovieResolver {
         // }
         const replacements: any[] = [realLimitPlusOne];
         // if (req.session?.userId) replacements.push(req.session.userId);
-        let cursorIdx = 3;
+        // let cursorIdx = 3;
         if (cursor) {
             replacements.push(new Date(parseInt(cursor)));
-            cursorIdx = replacements.length;
+            // cursorIdx = replacements.length;
         }
-        console.log(replacements);
 
         const movies = await getConnection().query(
             `
-          select * from movie
-          ${cursor ? `where "createdAt" < $${cursorIdx}` : ""}
-          order by "createdAt" DESC
+          select m.*
+          from movie m
+          ${cursor ? `where m."createdAt" < $2` : ""}
+          order by m."createdAt" DESC
           limit $1
           `,
             replacements
         );
+        console.log(movies);
+        
         return {
             movies: movies.slice(0, realLimit),
             hasMore: movies.length === realLimitPlusOne,
