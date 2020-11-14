@@ -45,12 +45,12 @@ const main = async () => {
         family: 4,
         password: process.env.REDIS_PASSWORD,
     });
-    app.use(
-        cors({
-            origin: process.env.CORS_ORIGIN,
-            credentials: true,
-        })
-    );
+    // app.use(
+    //     cors({
+    //         origin: process.env.CORS_ORIGIN,
+    //         credentials: true,
+    //     })
+    // );
 
     if (app.get("env") === "production") {
         app.set("trust proxy", 1); // trust first proxy
@@ -91,7 +91,10 @@ const main = async () => {
     // Middleware
     apolloServer.applyMiddleware({
         app,
-        cors: { origin: false },
+        cors: {
+            origin: process.env.CORS_ORIGIN,
+            credentials: true,
+        },
     });
 
     const port = process.env.PORT || 4000;
