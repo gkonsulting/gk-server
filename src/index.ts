@@ -69,10 +69,10 @@ const main = async () => {
             secret: process.env.SECRET, //krypterer userid key, express session setter cookie, req sender cookie, server dekrypterer, req til redis og får value userid
             resave: false,
             cookie: {
-                // domain: "guttakrutt-backend.herokuapp.com",
+                domain: __prod__ ? "herokuapp.com" : "",
                 maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 år
-                sameSite: __prod__ ? "none" : "lax", // csrf
-                secure: "auto", // hvis true funker det bare i https
+                sameSite: "lax", // csrf
+                secure: __prod__, // hvis true funker det bare i https
             },
             saveUninitialized: false,
         })
