@@ -8,7 +8,6 @@ import Redis from "ioredis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import { MyContext } from "./types";
-import cors from "cors";
 import { MovieResolver } from "./resolvers/MovieResolver";
 import { createConnection } from "typeorm";
 import { Movie } from "./enitities/Movie";
