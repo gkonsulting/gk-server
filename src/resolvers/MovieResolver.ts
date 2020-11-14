@@ -91,7 +91,7 @@ export class MovieResolver {
     }
 
     @Query(() => Movie, { nullable: true })
-    @UseMiddleware(isAuth)
+    // @UseMiddleware(isAuth)
     async getMovie(
         @Arg("id", () => Int!) id: number
     ): Promise<Movie | undefined> {
@@ -99,7 +99,7 @@ export class MovieResolver {
     }
 
     @Mutation(() => Movie)
-    @UseMiddleware(isAuth)
+    // @UseMiddleware(isAuth)
     async addMovie(
         @Arg("input") input: MovieInput,
         @Ctx() { req }: MyContext
@@ -111,7 +111,7 @@ export class MovieResolver {
     }
 
     @Mutation(() => Movie, { nullable: true })
-    @UseMiddleware(isAuth)
+    // @UseMiddleware(isAuth)
     async updateMovie(
         @Arg("id", () => Int) id: number,
         @Arg("input") input: MovieInput,
@@ -132,7 +132,7 @@ export class MovieResolver {
     }
 
     @Mutation(() => Boolean)
-    @UseMiddleware(isAuth)
+    // @UseMiddleware(isAuth)
     async deleteMovie(
         @Arg("id", () => Int) id: number,
         @Ctx() { req }: MyContext
