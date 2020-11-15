@@ -38,8 +38,8 @@ export class User extends BaseEntity {
     @Column()
     password!: string;
 
-    @Field()
-    secret: string;
+    @Field(() => String, { nullable: true })
+    secret!: string;
 
     @OneToMany(() => Movie, (movie) => movie.creator)
     movies: Movie[];
