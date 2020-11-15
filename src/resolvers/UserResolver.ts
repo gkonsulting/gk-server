@@ -140,7 +140,17 @@ export class UserResolver {
                 .execute();
             user = result.raw[0];
         } catch (error) {
-            if (error.detail.includes("already exists")) {
+            if (error.detail.includes("Key (email)")) {
+                return {
+                    errors: [
+                        {
+                            field: "email",
+                            message: "Email already exists",
+                        },
+                    ],
+                };
+            }
+            if (error.detail.includes("Key (username)")) {
                 return {
                     errors: [
                         {

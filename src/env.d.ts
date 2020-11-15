@@ -14,5 +14,6 @@ declare namespace NodeJS {
     REDIS_PASSWORD : string;
     GK_MAIL : string;
     GK_PASSWORD : string;
+    SECRET_KEY : string;
   }
 }

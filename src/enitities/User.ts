@@ -38,6 +38,9 @@ export class User extends BaseEntity {
     @Column()
     password!: string;
 
+    @Field()
+    secret: string;
+
     @OneToMany(() => Movie, (movie) => movie.creator)
     movies: Movie[];
 

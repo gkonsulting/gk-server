@@ -1,7 +1,4 @@
-import {
-    Field,
-    InputType
-} from "type-graphql";
+import { Field, InputType } from "type-graphql";
 
 @InputType()
 export class UserCredentials {
@@ -11,4 +8,6 @@ export class UserCredentials {
     username: string;
     @Field()
     password: string;
+    @Field()
+    secret: string;
 }

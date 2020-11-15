@@ -34,5 +34,16 @@ export const validateRegister = (options: UserCredentials) => {
             },
         ];
     }
+    if (options.secret !== process.env.SECRET_KEY) {
+        console.log(process.env.SECRET_KEY);
+        
+        return [
+            {
+                field: "secret",
+                message:
+                    "You secret key is invalid, please ask GK for the secret",
+            },
+        ];
+    }
     return null;
 };
