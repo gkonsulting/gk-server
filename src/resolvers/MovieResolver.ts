@@ -132,23 +132,9 @@ export class MovieResolver {
     ): Promise<PaginatedMovies> {
         const realLimit = Math.min(10, limit);
         const realLimitPlusOne = realLimit + 1;
-        // const qb = getConnection()
-        //     .getRepository(Movie)
-        //     .createQueryBuilder("movie")
-        //     .innerJoinAndSelect("movie.creator", "u", 'u.id = p."creatorid"')
-        //     .orderBy('movie."createdAt"', "DESC") // holde A uppercase, sorterer etter nyeste
-        //     .take(realLimitPlusOne);
-        // if (cursor) {
-        //     qb.where('movie."createdAt" < :cursor', {
-        //         cursor: new Date(parseInt(cursor)),
-        //     });
-        // }
         const replacements: any[] = [realLimitPlusOne];
-        // if (req.session?.userId) replacements.push(req.session.userId);
-        // let cursorIdx = 3;
         if (cursor) {
             replacements.push(new Date(parseInt(cursor)));
-            // cursorIdx = replacements.length;
         }
 
         const movies = await getConnection().query(
@@ -161,7 +147,6 @@ export class MovieResolver {
           `,
             replacements
         );
-        console.log(movies);
         
         return {
             movies: movies.slice(0, realLimit),

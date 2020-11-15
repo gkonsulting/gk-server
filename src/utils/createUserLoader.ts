@@ -9,9 +9,5 @@ export const createUserLoader = () =>
             userIdToUser[u.id] = u;
         });
 
-        const sortedUsers = userIds.map((userId) => userIdToUser[userId]);
-        // console.log("userIds", userIds);
-        // console.log("map", userIdToUser);
-        // console.log("sortedUsers", sortedUsers);
-        return sortedUsers;
+        return userIds.map((userId) => userIdToUser[userId]);
     });
