@@ -126,11 +126,12 @@ export class MovieResolver {
     }
 
     @Query(() => PaginatedMovies)
+    @UseMiddleware(isAuth)
     async getMovies(
         @Arg("limit", () => Int) limit: number,
         @Arg("cursor", () => String, { nullable: true }) cursor: string | null
     ): Promise<PaginatedMovies> {
-        const realLimit = Math.min(10, limit);
+        const realLimit = Math.min(50, limit);
         const realLimitPlusOne = realLimit + 1;
         const replacements: any[] = [realLimitPlusOne];
         if (cursor) {
@@ -147,7 +148,37 @@ export class MovieResolver {
           `,
             replacements
         );
-        
+
+        return {
+            movies: movies.slice(0, realLimit),
+            hasMore: movies.length === realLimitPlusOne,
+        };
+    }
+
+    @Query(() => PaginatedMovies)
+    @UseMiddleware(isAuth)
+    async getPopularMovies(
+        @Arg("limit", () => Int) limit: number,
+        @Arg("cursor", () => String, { nullable: true }) cursor: string | null
+    ): Promise<PaginatedMovies> {
+        const realLimit = Math.min(50, limit);
+        const realLimitPlusOne = realLimit + 1;
+        const replacements: any[] = [realLimitPlusOne];
+        if (cursor) {
+            replacements.push(new Date(parseInt(cursor)));
+        }
+
+        const movies = await getConnection().query(
+            `
+          select m.*
+          from movie m
+          ${cursor ? `where m."createdAt" < $2` : ""}
+          order by m."points" DESC
+          limit $1
+          `,
+            replacements
+        );
+
         return {
             movies: movies.slice(0, realLimit),
             hasMore: movies.length === realLimitPlusOne,
