@@ -166,7 +166,7 @@ export class MovieResolver {
         const replacements: any[] = [realLimitPlusOne];
 
         if (cursor) {
-            replacements.push(cursor);
+            replacements.push(cursor + 1);
         }
 
         const movies = await getConnection().query(
