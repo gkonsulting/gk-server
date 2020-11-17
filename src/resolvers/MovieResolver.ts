@@ -169,8 +169,6 @@ export class MovieResolver {
             replacements.push(cursor);
         }
 
-        console.log(replacements);
-
         const movies = await getConnection().query(
             `
           select m.*
@@ -183,10 +181,7 @@ export class MovieResolver {
             replacements
         );
 
-        console.log(movies);
-        console.log(realLimit);
-
-        return {            
+        return {
             movies: movies.slice(0, realLimit),
             hasMore: movies.length === realLimitPlusOne,
         };
