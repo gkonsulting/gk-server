@@ -146,7 +146,7 @@ export class MovieResolver {
           order by m."createdAt" DESC
           limit $1
           `,
-            replacements[replacements.length - 1]
+            replacements
         );
 
         return {
