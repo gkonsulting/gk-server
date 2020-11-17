@@ -65,4 +65,8 @@ export class Movie extends BaseEntity {
 
     @Field(() => Int, { nullable: true })
     voteStatus: number | null; // 1 or -1 or null
+
+    @Field(() => Boolean, { nullable: true })
+    @Column({ type: "boolean", default: false })
+    seen!: boolean;
 }
