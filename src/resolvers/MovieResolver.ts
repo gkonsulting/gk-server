@@ -214,7 +214,8 @@ export class MovieResolver {
             `
           select m.*
           from movie m
-          order by m."points" DESC,
+          order by m."seen" ASC,
+          "points" DESC,
           "createdAt" DESC
           limit $1
           ${cursor ? `offset $2` : ""}
