@@ -16,6 +16,9 @@ import path from "path";
 import { Vote } from "./enitities/Vote";
 import { createUserLoader } from "./utils/createUserLoader";
 import { createVoteLoader } from "./utils/createVoteLoader";
+import { Star } from "./enitities/Star";
+import { createStarLoader } from "./utils/createStarLoader";
+import { StarResolver } from "./resolvers/StarResolver";
 require("dotenv").config();
 
 const main = async () => {
@@ -35,7 +38,7 @@ const main = async () => {
         port: 5432,
         logging: true,
         synchronize: true,
-        entities: [Movie, User, Vote],
+        entities: [Movie, User, Vote, Star],
         migrations: [path.join(__dirname, "./migrations/*")],
     });
     //await conn.runMigrations();
@@ -83,7 +86,7 @@ const main = async () => {
     // Apolloserver setup, lager schema med resolvers
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [MovieResolver, UserResolver],
+            resolvers: [MovieResolver, UserResolver, StarResolver],
             validate: false,
         }),
         context: ({ req, res }): MyContext => ({
@@ -92,6 +95,7 @@ const main = async () => {
             redis,
             userLoader: createUserLoader(),
             voteLoader: createVoteLoader(),
+            starLoader: createStarLoader(),
         }),
     });
 

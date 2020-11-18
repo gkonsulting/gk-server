@@ -9,6 +9,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
+import { Star } from "./Star";
 import { User } from "./User";
 import { Vote } from "./Vote";
 
@@ -65,6 +66,20 @@ export class Movie extends BaseEntity {
 
     @Field(() => Int, { nullable: true })
     voteStatus: number | null; // 1 or -1 or null
+
+    @OneToMany(() => Star, (star) => star.movie)
+    stars: Star[];
+
+    @Field(() => Int, { nullable: true })
+    @Column({ type: "int", default: 0 })
+    userStars: number | null;
+
+    @Field()
+    @Column({ type: "decimal", default: 0 })
+    totalStars!: number;
+
+    @Field(() => Int, { nullable: true })
+    starStatus: number | null;
 
     @Field(() => Boolean, { nullable: true })
     @Column({ type: "boolean", default: false })

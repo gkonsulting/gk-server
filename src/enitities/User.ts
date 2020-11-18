@@ -9,6 +9,7 @@ import {
     UpdateDateColumn,
 } from "typeorm";
 import { Movie } from "./Movie";
+import { Star } from "./Star";
 import { Vote } from "./Vote";
 
 //Lager entitet og objekttype
@@ -46,4 +47,7 @@ export class User extends BaseEntity {
 
     @OneToMany(() => Vote, (vote) => vote.user)
     votes: Vote[];
+    
+    @OneToMany(() => Star, (star) => star.user)
+    stars: Star[];
 }

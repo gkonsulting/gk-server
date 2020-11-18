@@ -18,6 +18,7 @@ import { isAuth } from "../enitities/middleware/isAUth";
 import { getConnection } from "typeorm";
 import { User } from "../enitities/User";
 import { Vote } from "../enitities/Vote";
+import { Star } from "../enitities/Star";
 
 //Resolver for queries med graphql
 @InputType()
@@ -63,6 +64,23 @@ export class MovieResolver {
         });
 
         return vote ? vote.value : null;
+    }
+
+    @FieldResolver(() => Int, { nullable: true })
+    async starStatus(
+        @Root() movie: Movie,
+        @Ctx() { starLoader, req }: MyContext
+    ) {
+        if (!req.session?.userId) {
+            return null;
+        }
+
+        const star = await starLoader.load({
+            movieId: movie.id,
+            userId: req.session.userId,
+        });
+
+        return star ? star.value : null;
     }
 
     @Mutation(() => Boolean)
@@ -124,6 +142,73 @@ export class MovieResolver {
         return true;
     }
 
+    @Mutation(() => Boolean)
+    @UseMiddleware(isAuth)
+    async setStars(
+        @Arg("movieId", () => Int) movieId: number,
+        @Arg("value", () => Int) value: number,
+        @Ctx() { req }: MyContext
+    ) {
+        // const isStar = value !== -1;
+        const realValue = value;
+        const { userId } = req.session!;
+
+        const star = await Star.findOne({ where: { movieId, userId } });
+
+        // the user has voted on the movie before
+        // and they are changing their vote
+        if (star && star.value !== realValue) {
+            await getConnection().transaction(async (tm) => {
+                await tm.query(
+                    `
+                    update star
+                    set value = $1
+                    where "movieId" = $2 and "userId" = $3
+                        `,
+                    [realValue, movieId, userId]
+                );
+
+                await tm.query(
+                    `
+                    update movie
+                    set "totalStars" = "totalStars" + $1
+                    where id = $2
+                    `,
+                    [realValue - star.value, movieId]
+                );
+            });
+        } else if (!star) {
+            // has never voted before
+            await getConnection().transaction(async (tm) => {
+                await tm.query(
+                    `
+                insert into star ("userId", "movieId", value)
+                values ($1, $2, $3)
+                    `,
+                    [userId, movieId, realValue]
+                );
+
+                await tm.query(
+                    `
+                update movie
+                set "totalStars" = "totalStars" + $1
+                where id = $2
+                `,
+                    [realValue, movieId]
+                );
+                await tm.query(
+                    `
+                update movie
+                set "userStars" = "userStars" + $1
+                where id = $2
+                `,
+                    [1, movieId]
+                );
+            });
+        }
+        return true;
+    }
+
     @Query(() => PaginatedMovies)
     @UseMiddleware(isAuth)
     async getMovies(
@@ -164,7 +249,7 @@ export class MovieResolver {
         const realLimit = Math.min(50, limit);
         const realLimitPlusOne = realLimit + 1;
         const replacements: any[] = [realLimitPlusOne];
-        replacements.push(creatorId)
+        replacements.push(creatorId);
 
         if (cursor) {
             replacements.push(new Date(parseInt(cursor)));
@@ -188,7 +273,6 @@ export class MovieResolver {
         );
 
         console.log(movies.length);
-        
 
         return {
             movies: movies.slice(0, realLimit),
