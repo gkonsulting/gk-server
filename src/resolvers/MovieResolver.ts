@@ -236,7 +236,7 @@ export class MovieResolver {
           select m.*
           from movie m
           ${cursor ? `where m."createdAt" < $2` : `where m."seen" = false`}
-          order by m."seen" ASC
+          order by m."createdAt" DESC
           limit $1
           `,
             replacements
