@@ -137,6 +137,15 @@ export class MovieResolver {
                 `,
                     [realValue, movieId]
                 );
+
+                await tm.query(
+                    `
+                    update movie
+                    set "userVotes" = "userVotes" + $1
+                    where id = $2
+                `,
+                    [1, movieId]
+                );
             });
         }
         return true;

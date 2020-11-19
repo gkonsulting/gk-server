@@ -72,6 +72,10 @@ export class Movie extends BaseEntity {
 
     @Field(() => Int, { nullable: true })
     @Column({ type: "int", default: 0 })
+    userVotes: number | null;
+
+    @Field(() => Int, { nullable: true })
+    @Column({ type: "int", default: 0 })
     userStars: number | null;
 
     @Field()
