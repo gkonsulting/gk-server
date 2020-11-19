@@ -235,7 +235,11 @@ export class MovieResolver {
             `
           select m.*
           from movie m
-          ${cursor ? `where m."createdAt" < $2` : `where m."seen" = false`}
+          ${
+              cursor
+                  ? `where m."createdAt" < $2 and m."seen" = false`
+                  : `where m."seen" = false`
+          }
           order by m."createdAt" DESC
           limit $1
           `,
@@ -298,8 +302,6 @@ export class MovieResolver {
             replacements.push(new Date(parseInt(cursor)));
         }
 
-        console.log("cursor", replacements);
-
         const movies = await getConnection().query(
             `
           select m.*
@@ -314,8 +316,6 @@ export class MovieResolver {
           `,
             replacements
         );
-
-        console.log(movies.length);
 
         return {
             movies: movies.slice(0, realLimit),
