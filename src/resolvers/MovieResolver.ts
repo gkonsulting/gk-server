@@ -26,6 +26,8 @@ class MovieInput {
     @Field()
     title: string;
     @Field()
+    releasedAt: string;
+    @Field()
     description: string;
     @Field()
     poster: string;
@@ -393,6 +395,9 @@ export class MovieResolver {
             })
             .returning("*")
             .execute();
+
+        console.log(result);
+        
 
         return result.raw[0];
     }

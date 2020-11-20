@@ -29,6 +29,10 @@ export class Movie extends BaseEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
+    @Field(() => String, { nullable: true })
+    @Column({ type: "text" })
+    releasedAt: String;
+
     @Field()
     @Column()
     title!: string;
