@@ -11,6 +11,8 @@ import {
 import { Movie } from "./Movie";
 import { Star } from "./Star";
 import { Vote } from "./Vote";
+import { Response } from "./Response";
+import { Event } from "./Event";
 
 //Lager entitet og objekttype
 @ObjectType()
@@ -45,9 +47,15 @@ export class User extends BaseEntity {
     @OneToMany(() => Movie, (movie) => movie.creator)
     movies: Movie[];
 
+    @OneToMany(() => Event, (event) => event.creator)
+    events: Event[];
+
     @OneToMany(() => Vote, (vote) => vote.user)
     votes: Vote[];
     
     @OneToMany(() => Star, (star) => star.user)
     stars: Star[];
+
+    @OneToMany(() => Response, (response) => response.user)
+    responses: Response[];
 }

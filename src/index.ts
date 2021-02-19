@@ -17,8 +17,13 @@ import { Vote } from "./enitities/Vote";
 import { createUserLoader } from "./utils/createUserLoader";
 import { createVoteLoader } from "./utils/createVoteLoader";
 import { Star } from "./enitities/Star";
+import { Event } from "./enitities/Event";
+import { Response } from "./enitities/Response";
 import { createStarLoader } from "./utils/createStarLoader";
 import { StarResolver } from "./resolvers/StarResolver";
+import { createResponseLoader } from "./utils/createResponseLoader";
+import { EventResolver } from "./resolvers/EventResolver";
+
 require("dotenv").config();
 
 const main = async () => {
@@ -38,7 +43,7 @@ const main = async () => {
         port: 5432,
         logging: true,
         synchronize: true,
-        entities: [Movie, User, Vote, Star],
+        entities: [Movie, User, Vote, Star, Event, Response],
         migrations: [path.join(__dirname, "./migrations/*")],
     });
     //await conn.runMigrations();
@@ -86,7 +91,12 @@ const main = async () => {
     // Apolloserver setup, lager schema med resolvers
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [MovieResolver, UserResolver, StarResolver],
+            resolvers: [
+                MovieResolver,
+                UserResolver,
+                StarResolver,
+                EventResolver,
+            ],
             validate: false,
         }),
         context: ({ req, res }): MyContext => ({
@@ -96,6 +106,7 @@ const main = async () => {
             userLoader: createUserLoader(),
             voteLoader: createVoteLoader(),
             starLoader: createStarLoader(),
+            responseLoader: createResponseLoader(),
         }),
     });
 
