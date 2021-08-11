@@ -108,7 +108,6 @@ export class EventResolver {
     }
 
     @Query(() => PaginatedEvents)
-    @UseMiddleware(isAuth)
     async getEvents(
         @Arg("limit", () => Int) limit: number,
         @Arg("cursor", () => String, { nullable: true }) cursor: string | null
@@ -129,7 +128,7 @@ export class EventResolver {
           limit $1
           `,
             replacements
-        );
+        );        
 
         return {
             events: events.slice(0, realLimit),

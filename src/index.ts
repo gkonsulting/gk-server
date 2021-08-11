@@ -23,6 +23,7 @@ import { createStarLoader } from "./utils/createStarLoader";
 import { StarResolver } from "./resolvers/StarResolver";
 import { createResponseLoader } from "./utils/createResponseLoader";
 import { EventResolver } from "./resolvers/EventResolver";
+import { ResponseResolver } from "./resolvers/ResponseResolver";
 
 require("dotenv").config();
 
@@ -54,6 +55,9 @@ const main = async () => {
         host: process.env.REDIS_HOST,
         family: 4,
         password: process.env.REDIS_PASSWORD,
+        tls: {
+            rejectUnauthorized: false,
+        },
     });
     // app.use(
     //     cors({
@@ -96,6 +100,7 @@ const main = async () => {
                 UserResolver,
                 StarResolver,
                 EventResolver,
+                ResponseResolver,
             ],
             validate: false,
         }),
